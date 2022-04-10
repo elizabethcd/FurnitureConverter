@@ -6,7 +6,7 @@ Right now, this is not finished, and will not always produce valid image indexes
 
 ## How to Use
 
-* Install python 3 of some sort
+* Install python of some sort
 * Install the packages used, if needed
   * In a terminal window, type `pip install json5` and hit return (the other packages used should be default python packages, I believe)
 * Place your CF furniture json, renamed to `original_furniture.json`, into the same folder as the python script
