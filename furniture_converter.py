@@ -3,7 +3,7 @@ import json5
 import re
 
 filename = "original_furniture.json"
-uniqueString = "examplemod.user"
+uniqueString = "FlowerPrideBanners.Lumisteria"
 tilesheetLocation = "Mods"
 
 furnitureTypes = {
@@ -52,7 +52,7 @@ for item in furniture_data:
 	dga_item_data["$ItemType"] = "Furniture"
 	itemID = re.sub("[^a-zA-Z]+", "", item["name"])
 	dga_item_data["ID"] = itemID
-	dga_item_data["Type"] = item["type"].capitalize() # This needs more data sanitizing
+	dga_item_data["Type"] = item["type"].capitalize() # This needs more data sanitizing/validation
 	itemTexture = item["texture"]
 	# Save the item name and description into default.json
 	dga_default["furniture." + itemID + ".name"] = item["name"]
@@ -77,7 +77,7 @@ for item in furniture_data:
 	allTextures.add(itemTexture)
 	# Set up the basic furniture data
 	uniqueItemID = uniqueString + "." + itemID
-	itemType = furnitureTypes[item["type"].capitalize()]
+	itemType = item["type"]
 	itemSize = str(item["width"]) + " " + str(item["height"])
 	itemBoxSize = str(item["boxWidth"]) + " " + str(item["boxHeight"])
 	itemPrice = str(item["price"])
@@ -96,7 +96,7 @@ for item in furniture_data:
 	# Index 8 for the index in the tilesheet
 	# Index 9 for the tilesheet path
 	cp_item_data = [uniqueItemID, str(itemType), itemSize, itemBoxSize, str(numRotations), 
-		itemPrice, displayName, placementRestrict, tilesheetIndex, tilesheetPath]
+		itemPrice, placementRestrict, displayName, tilesheetIndex, tilesheetPath]
 	cp_item_data = "/".join(cp_item_data)
 	# Save to the json dictionary
 	cp_default[uniqueItemID + ".name"] = item["name"]
