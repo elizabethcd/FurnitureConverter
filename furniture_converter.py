@@ -5,7 +5,7 @@ import math
 from PIL import Image
 
 #### Important inputs, TODO: move to command line input
-filename = "original_more_complex_furniture.json"
+filename = "original_furniture.json"
 uniqueString = "BeechFurniture.Lumisteria"
 tilesheetLocation = "Mods"
 
