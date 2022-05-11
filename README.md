@@ -12,7 +12,7 @@ Right now, this is not finished, and may fail on some furniture types. It also d
   * Similarly, type `pip install pillow` and hit return
   * The other packages used should be default python packages, I believe
 * Place your CF furniture json, renamed to `original_furniture.json`, into the same folder as the python script
-* Change the line `uniqueString = "BeechFurniture.Lumisteria"` into `uniqueString = "ModUniqueID"` or something similar
+* Change the line inside `furniture_converter.py` that is `uniqueString = "BeechFurniture.Lumisteria"` into `uniqueString = "ModUniqueID"` or something similar
 * Use `cd` to navigate into the folder with the python script and the json, or open a terminal window in that folder
 * Type `python furniture_converter.py` into terminal and hit return
 * It should spit out four json files you can rename and use in either DGA or CP mods. See the documentation for both frameworks for more details. The `default_cp.json` and `default_dga.json` are for use in i18n translations. You will need to rename them. It will also spit out one tilesheet, `dga_furniture_tilesheet.png`, which has the furnitures rearranged to fit the DGA conventions.
