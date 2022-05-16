@@ -6,7 +6,7 @@ import argparse
 from PIL import Image
 from pathlib import Path
 
-#### Important inputs, TODO: move to command line input
+#### Important inputs
 filename = "content.json"
 originalLocation = "original"
 tilesheetLocation = "Mods"
@@ -139,7 +139,7 @@ for item in furniture_data:
 	dga_item_data = {}
 	dga_item_data["$ItemType"] = "Furniture"
 	dga_item_data["ID"] = itemID
-	dga_item_data["Type"] = item["type"].capitalize() # This needs more data sanitizing/validation
+	dga_item_data["Type"] = furnitureTypesConversion[item["type"]] # This needs more data sanitizing/validation
 	# Save the item name and description into default.json
 	dga_default["furniture." + itemID + ".name"] = item["name"]
 	dga_default["furniture." + itemID + ".description"] = item["description"]
@@ -299,7 +299,7 @@ dga_manifest = {
 		"MinimumVersion": "1.4.2",
 	},
 	"DGA.FormatVersion": 2,
-    "DGA.ConditionsFormatVersion": "1.23.0"
+    "DGA.ConditionsFormatVersion": "1.25.0"
 }
 
 # Make a new manifest for CP
