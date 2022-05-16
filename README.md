@@ -6,16 +6,23 @@ Right now, this is not finished, and may fail on some furniture types. It also d
 
 ## How to Use
 
-* Install python of some sort
+* Install python 3 of some sort
 * Install the packages used, if needed
   * In a terminal window, type `pip install json5` and hit return 
   * Similarly, type `pip install pillow` and hit return
+  * Similarly, type `pip install argparse` and hit return
   * The other packages used should be default python packages, I believe
-* Place your CF furniture json, renamed to `original_furniture.json`, into the same folder as the python script
-* Change the line inside `furniture_converter.py` that is `uniqueString = "BeechFurniture.Lumisteria"` into `uniqueString = "ModUniqueID"` or something similar
+* Download the python script from Github (Green "Code" button, then "Download as .zip" option, then unzip)
+* Place the CF furniture mod to be converted into the same folder as the python script, and rename the folder to `original`
 * Use `cd` to navigate into the folder with the python script and the json, or open a terminal window in that folder
-* Type `python furniture_converter.py` into terminal and hit return
-* It should spit out four json files you can rename and use in either DGA or CP mods. See the documentation for both frameworks for more details. The `default_cp.json` and `default_dga.json` are for use in i18n translations. You will need to rename them. It will also spit out one tilesheet, `dga_furniture_tilesheet.png`, which has the furnitures rearranged to fit the DGA conventions.
+  * On a Mac, right click on the folder name and pick "New Terminal at Folder"
+  * On Windows, hold shift, right click in the folder background, and pick one of "Open in Command Prompt", "Open in PowerShell", or "Open in Windows Terminal" (depending on your system settings).
+  * Not sure what Linux does, but if you use Linux you probably know how to use `cd`
+* Type `python furniture_converter.py --modName SOMENAMEHERE` but with `SOMENAMEHERE` swapped out for a descriptive string into terminal and hit return
+  * Putting `--modName SOMENAMEHERE` in is required. Some examples: BeechFurniture, FlowerPrideBanners, SpringFurniture
+  * Putting `--fileName ORIGONALJSONANME` is required if the json file in the CF pack is not named `content.json`. Do not put `.json` into this, just the filename.
+  * Putting `--modAuthor MODAUTHORNAME` is optional, but recommended if there's anything weird in the author field
+* It should create two new folders in the same folder as the script, one containing a DGA mod and one containing a CP mod. The two folders should be named something reasonable, and you should be able to use them as fully functional mods. 
 
 ## Planned Improvements
 
