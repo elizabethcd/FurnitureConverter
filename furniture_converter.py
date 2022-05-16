@@ -53,24 +53,33 @@ dgaTilesheetName = "dga_furniture_tilesheet.png"
 
 #### Load up the furniture json!
 folderPath = Path(originalLocation)
-try:
-    # Try using the standard module first because it's fast and handles most cases.
-    with folderPath.joinpath(filename).open("r") as read_file:
-	    data = json.load(read_file)
-except json.decoder.JSONDecodeError:
-    # The json5 module is much slower, but is more lenient about formatting issues.
-    with folderPath.joinpath(filename).open("r") as read_file:
-	    data = json5.load(read_file)
 
-# Read the manifest
+# Read the furniture json in as text
+file_contents = folderPath.joinpath(filename).read_text()
+
+# Some third-party JSON files begin with extraneous characters - try to fix them up.
+unused_chars, opening_bracket, rest_of_file = file_contents.partition("{")
+file_contents = opening_bracket + rest_of_file  # Discard the extra characters.
+
 try:
     # Try using the standard module first because it's fast and handles most cases.
-    with folderPath.joinpath("manifest.json").open("r") as read_file:
-	    manifest = json.load(read_file)
+	data = json.loads(file_contents)
 except json.decoder.JSONDecodeError:
     # The json5 module is much slower, but is more lenient about formatting issues.
-    with folderPath.joinpath("manifest.json").open("r") as read_file:
-	    manifest = json5.load(read_file)
+	data = json5.loads(file_contents)
+
+# Read the manifest json in as text
+file_contents = folderPath.joinpath("manifest.json").read_text()
+
+# Some third-party JSON files begin with extraneous characters - try to fix them up.
+unused_chars, opening_bracket, rest_of_file = file_contents.partition("{")
+file_contents = opening_bracket + rest_of_file  # Discard the extra characters.
+try:
+    # Try using the standard module first because it's fast and handles most cases.
+	manifest = json.loads(file_contents)
+except json.decoder.JSONDecodeError:
+    # The json5 module is much slower, but is more lenient about formatting issues.
+	manifest = json5.loads(file_contents)
 
 modAuthor = args.modAuthor if args.modAuthor is not None else manifest["Author"]
 uniqueString = modAuthor + "." + modName
