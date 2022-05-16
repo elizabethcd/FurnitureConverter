@@ -6,7 +6,7 @@ Right now, this is not finished, and may fail on some furniture types. It also d
 
 ## How to Use
 
-* Install python 3 of some sort
+* Install python 3 of some sort: https://www.python.org/downloads/
 * Install the packages used, if needed
   * In a terminal window, type `pip install json5` and hit return 
   * Similarly, type `pip install pillow` and hit return
