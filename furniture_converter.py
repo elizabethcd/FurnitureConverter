@@ -2,12 +2,26 @@ import json
 import json5
 import re
 import math
+import argparse
 from PIL import Image
+from pathlib import Path
 
 #### Important inputs, TODO: move to command line input
-filename = "original_furniture.json"
-uniqueString = "BeechFurniture.Lumisteria"
+filename = "content.json"
+originalLocation = "original"
 tilesheetLocation = "Mods"
+
+# Create the parser
+parser = argparse.ArgumentParser()
+# Add an argument
+parser.add_argument('--modName', type=str, required=True, help="Name of the mod (no spaces), should be identifying")
+parser.add_argument('--modAuthor', type=str, required=False, help="Author of the original mod (no spaces)")
+parser.add_argument('--fileName', type=str, required=False, help="Name of the json file where the original mod declared the furniture (no spaces)")
+# Parse the argument
+args = parser.parse_args()
+
+modName = args.modName
+filename = filename if args.fileName is None else args.fileName + ".json"
 
 #### Define some useful constants
 furnitureTypesConversion = {
@@ -31,19 +45,35 @@ furnitureTypesConversion = {
 dgaFurnitureTypes = ["Bed", "Decoration", "Dresser", "Fireplace", "FishTank", "Lamp", "Painting", "Rug",
 	"Table", "Sconce", "TV", "Window"]
 
+dgaTilesheetName = "dga_furniture_tilesheet.png"
+
 # TODO: Define default chair sitting properties
 # TODO: Handle FrontTexture for chairs
 # TODO: Handle NightTexture for windows, lamps
 
-#### Load up!
+#### Load up the furniture json!
+folderPath = Path(originalLocation)
 try:
     # Try using the standard module first because it's fast and handles most cases.
-    with open(filename, "r") as read_file:
+    with folderPath.joinpath(filename).open("r") as read_file:
 	    data = json.load(read_file)
 except json.decoder.JSONDecodeError:
     # The json5 module is much slower, but is more lenient about formatting issues.
-    with open(filename, "r") as read_file:
+    with folderPath.joinpath(filename).open("r") as read_file:
 	    data = json5.load(read_file)
+
+# Read the manifest
+try:
+    # Try using the standard module first because it's fast and handles most cases.
+    with folderPath.joinpath("manifest.json").open("r") as read_file:
+	    manifest = json.load(read_file)
+except json.decoder.JSONDecodeError:
+    # The json5 module is much slower, but is more lenient about formatting issues.
+    with folderPath.joinpath("manifest.json").open("r") as read_file:
+	    manifest = json5.load(read_file)
+
+modAuthor = args.modAuthor if args.modAuthor is not None else manifest["Author"]
+uniqueString = modAuthor + "." + modName
 
 #### Time to process!
 furniture_data = data["furniture"]
@@ -70,7 +100,7 @@ for item in furniture_data:
 
 	#### Save textures for later
 	allTextures.add(itemTexture)
-	tilesheetImage = Image.open(itemTexture)
+	tilesheetImage = Image.open(folderPath.joinpath(itemTexture))
 	w, h = tilesheetImage.size
 	tilesheetWide = w/16
 	tilesheetTall = h/16
@@ -115,7 +145,7 @@ for item in furniture_data:
 	dga_default["furniture." + itemID + ".description"] = item["description"]
 	# Generate the different configurations
 	# TODO: add for loop here
-	dgaItemTexture = "dga_furniture_tilesheet:0" # Placeholder
+	dgaItemTexture = dgaTilesheetName + ":0" # Placeholder
 	dgaConfigs = [ {
 		"Texture": dgaItemTexture, 
 		"DisplaySize": {"X": itemWidth, "Y": itemHeight}, 
@@ -176,7 +206,7 @@ allImageWidths = [];
 for hts in imageHeightDict:
 	allImageHeights.extend(imageHeightDict[hts])
 for wths in imageWidthDict:
-	allImageWidths.extend(imageHeightDict[wths])
+	allImageWidths.extend(imageWidthDict[wths])
 allImageHeights = list(set(allImageHeights))
 allImageHeights.sort(reverse=True)
 allImageWidths = list(set(allImageWidths))
@@ -222,15 +252,11 @@ for ht in allImageHeights:
 					# Set the index in the relevant configuration
 					for furn in dga_data:
 						if furn["ID"] == item:
-							furn["Configurations"][imInd]["Texture"] = "dga_furniture_tilesheet.png:" + str(imageLoc)
+							furn["Configurations"][imInd]["Texture"] = dgaTilesheetName + ":" + str(imageLoc)
 					# Paste the image into the tilesheet
 					imXLoc = 16*((imageLoc * imW) % tilesheetWidth)
 					imYLoc = 16*(((imageLoc * imW) // tilesheetWidth) * imH)
 					newTilesheet.paste(im,(imXLoc,imYLoc))
-
-## Save the new tilesheet
-newTilesheet = newTilesheet.crop((0,0,tilesheetWidth*16,tilesheetHeight*16))
-newTilesheet.save("dga_furniture_tilesheet.png")
 
 # Add the extra stuff to the CP json
 actual_cp_data = {
@@ -252,14 +278,79 @@ for tex in allTextures:
 		"FromFile": tex
 		})
 
-with open("converted_furniture_dga.json", "w") as write_file:
+# Create the content.json for DGA
+dga_content_data = [
+	{
+        "$ItemType": "ContentIndex",
+        "FilePath": "furniture.json"
+    },
+]
+
+# Make a new manifest for DGA
+dga_manifest = {
+	"Name": manifest["Name"],
+	"Author": modAuthor,
+	"Version": "1.0.0",
+	"Description": manifest["Description"],
+	"UniqueID": modAuthor + ".DGA." + modName,
+	"UpdateKeys": [],
+	"ContentPackFor": {
+		"UniqueID": "spacechase0.DynamicGameAssets",
+		"MinimumVersion": "1.4.2",
+	},
+	"DGA.FormatVersion": 2,
+    "DGA.ConditionsFormatVersion": "1.23.0"
+}
+
+# Make a new manifest for CP
+cp_manifest = {
+	"Name": manifest["Name"],
+	"Author": modAuthor,
+	"Version": "1.0.0",
+	"Description": manifest["Description"],
+	"UniqueID": modAuthor + ".CP." + modName,
+	"UpdateKeys": [],
+	"ContentPackFor": {
+		"UniqueID": "Pathoschild.ContentPatcher",
+		"MinimumVersion": "1.26.0",
+	}
+}
+
+## Save all the json files
+dga_folder_path = Path("[DGA] " + manifest["Name"])
+dga_folder_path.mkdir(exist_ok=True)
+with dga_folder_path.joinpath("furniture.json").open("w") as write_file:
 	json.dump(dga_data, write_file, indent=4)
 
-with open("default_dga.json", "w") as write_file:
+with dga_folder_path.joinpath("content.json").open("w") as write_file:
+	json.dump(dga_content_data, write_file, indent=4)
+
+with dga_folder_path.joinpath("manifest.json").open("w") as write_file:
+	json.dump(dga_manifest, write_file, indent=4)
+
+dga_i18n_path = dga_folder_path.joinpath("i18n")
+dga_i18n_path.mkdir(exist_ok=True)
+with dga_i18n_path.joinpath("default.json").open("w") as write_file:
 	json.dump(dga_default, write_file, indent=4)
 
-with open("converted_furniture_cp.json", "w") as write_file:
+cp_folder_path = Path("[CP] " + manifest["Name"])
+cp_folder_path.mkdir(exist_ok=True)
+with cp_folder_path.joinpath("content.json").open("w") as write_file:
     json.dump(actual_cp_data, write_file, indent=4)
 
-with open("default_cp.json", "w") as write_file:
+with cp_folder_path.joinpath("manifest.json").open("w") as write_file:
+    json.dump(cp_manifest, write_file, indent=4)  
+
+cp_i18n_path = cp_folder_path.joinpath("i18n")
+cp_i18n_path.mkdir(exist_ok=True)
+with cp_i18n_path.joinpath("default.json").open("w") as write_file:
 	json.dump(cp_default, write_file, indent=4)
+
+## Save the new DGA tilesheet
+newTilesheet = newTilesheet.crop((0,0,tilesheetWidth*16,tilesheetHeight*16))
+newTilesheet.save(dga_folder_path.joinpath(dgaTilesheetName))
+
+## Save the CP tilesheets
+for tex in allTextures:
+	texIm = Image.open(folderPath.joinpath(tex))
+	texIm.save(cp_folder_path.joinpath(tex))
