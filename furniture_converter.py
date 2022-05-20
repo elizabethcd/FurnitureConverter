@@ -408,4 +408,5 @@ frontTilesheet.save(dga_folder_path.joinpath(frontTilesheetName))
 ## Save the CP tilesheets
 for tex in allTextures:
 	texIm = Image.open(folderPath.joinpath(tex))
+	cp_folder_path.joinpath(Path(tex).parent).mkdir(exist_ok=True)
 	texIm.save(cp_folder_path.joinpath(tex))
