@@ -64,6 +64,8 @@ file_contents = folderPath.joinpath(filename).read_text()
 unused_chars, opening_bracket, rest_of_file = file_contents.partition("{")
 file_contents = opening_bracket + rest_of_file  # Discard the extra characters.
 
+# TODO: Some JSON files have curly quotes in them, it may be worth correcting them
+
 try:
     # Try using the standard module first because it's fast and handles most cases.
 	data = json.loads(file_contents)
@@ -200,9 +202,10 @@ for item in furniture_data:
 			})
 	if item["type"] == "chair":
 		for i in range(numRotations):
-			dgaConfigs[i]["Seats"] = [{"X": 0, "Y": 0}]
-			dgaConfigs[i]["SittingDirection"] = dgaSitDirections[i]
-			dgaConfigs[i]["FrontTexture"] = frontTilesheetName + ":0" # Placeholder
+			if i in dgaConfigs:
+				dgaConfigs[i]["Seats"] = [{"X": 0, "Y": 0}]
+				dgaConfigs[i]["SittingDirection"] = dgaSitDirections[i]
+				dgaConfigs[i]["FrontTexture"] = frontTilesheetName + ":0" # Placeholder
 	if item["type"] == "window":
 		dgaConfigs[0]["NightTexture"] = frontTilesheetName + ":0" # Placeholder
 	dga_item_data["Configurations"] = dgaConfigs
