@@ -2,7 +2,7 @@
 
 This is a tool for use when converting Custom Furniture (CF) mods to either use Dynamic Game Assets (DGA) in the current 1.5.6 version of Stardew Valley, or Content Patcher (CP) in a future version of Stardew Valley. 
 
-Right now, this is not finished, and may fail on some furniture types. It also does not add in anything beyond the basic furniture definition. 
+Right now, this is not finished, and may fail if the CF json is formatted in an unexpected way. Feedback is welcome via Github issues or the Stardew Valley Discord (please include the exact error encountered and ideally the json file as well via smapi.io/json).
 
 ## How to Use
 
@@ -27,7 +27,6 @@ Right now, this is not finished, and may fail on some furniture types. It also d
 ## Planned Improvements
 
 * Better error-checking/handling of furniture types
-* FrontTexture support for chairs
-* Default sitting locations for chairs
+* Estimated FrontTexture support for armchairs from the side
+* Default sitting locations for couches, benches, and armchairs
 * Display name overrides for furniture categories
-* NightTexture support for lamps and windows
