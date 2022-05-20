@@ -27,7 +27,7 @@ filename = filename if args.fileName is None else args.fileName + ".json"
 furnitureTypesConversion = {
 	"table": "Table",
 	"long table": "Table",
-	"stool": "Decoration",
+	"stool": "Decoration", # May need to add in a special check to see if the name contains "stool"
 	"chair": "Decoration",
 	"bench": "Decoration",
 	"couch": "Decoration",
@@ -45,7 +45,10 @@ furnitureTypesConversion = {
 dgaFurnitureTypes = ["Bed", "Decoration", "Dresser", "Fireplace", "FishTank", "Lamp", "Painting", "Rug",
 	"Table", "Sconce", "TV", "Window"]
 
+dgaSitDirections = ["Down","Right","Up","Left"]
+
 dgaTilesheetName = "dga_furniture_tilesheet.png"
+frontTilesheetName = "dga_front_tilesheet.png"
 
 # TODO: Define default chair sitting properties
 # TODO: Handle FrontTexture for chairs
@@ -92,6 +95,7 @@ cp_default = {}
 dga_default = {}
 allTextures = set()
 imageDict = {}
+imageLocationDict = {}
 imageWidthDict = {}
 imageHeightDict = {}
 for item in furniture_data:
@@ -115,11 +119,13 @@ for item in furniture_data:
 	tilesheetTall = h/16
 	xLoc = (item["index"] % tilesheetWide) * 16
 	yLoc = (item["index"] // tilesheetWide) * 16
-	itemImages = [];
-	itemImageWidths = [];
-	itemImageHeights = [];
+	itemImages = []
+	itemImageLocs = []
+	itemImageWidths = []
+	itemImageHeights = []
 	imageCoords = (xLoc, yLoc, xLoc+16*itemWidth, yLoc+16*itemHeight)
 	itemImages.append(tilesheetImage.crop(imageCoords))
+	itemImageLocs.append(0)
 	itemImageWidths.append(itemWidth)
 	itemImageHeights.append(itemHeight)
 	# Check the number of rotations is valid for vanilla
@@ -128,18 +134,29 @@ for item in furniture_data:
 	if numRotations == 2 or numRotations == 4:
 		imageCoords = (xLoc+16*itemWidth, yLoc, xLoc+16*itemWidth+16*rotatedWidth, yLoc+16*rotatedHeight)
 		itemImages.append(tilesheetImage.crop(imageCoords))
+		itemImageLocs.append(1)
 		itemImageWidths.append(rotatedWidth)
 		itemImageHeights.append(rotatedHeight)
 	if numRotations == 4:
 		imageCoords = (xLoc+16*itemWidth+16*rotatedWidth, yLoc, xLoc+32*itemWidth+16*rotatedWidth, yLoc+16*itemHeight)
 		itemImages.append(tilesheetImage.crop(imageCoords))
+		itemImageLocs.append(2)
 		itemImageWidths.append(itemWidth)
 		itemImageHeights.append(itemHeight)
 		imageCoords = (xLoc+16*itemWidth, yLoc, xLoc+16*itemWidth+16*rotatedWidth, yLoc+16*rotatedHeight)
 		itemImages.append(tilesheetImage.crop(imageCoords).transpose(Image.Transpose.FLIP_LEFT_RIGHT))
+		itemImageLocs.append(3)
 		itemImageWidths.append(rotatedWidth)
 		itemImageHeights.append(rotatedHeight)
+	# For windows and lamps, save the night textures
+	if item["type"] == "window" or item["type"] == "lamp":
+		imageCoords = (xLoc+16*itemWidth, yLoc, xLoc+16*itemWidth*2, yLoc+16*itemHeight)
+		itemImages.append(tilesheetImage.crop(imageCoords))
+		itemImageLocs.append("NightTexture")
+		itemImageWidths.append(itemWidth)
+		itemImageHeights.append(itemHeight)
 	imageDict[itemID] = itemImages
+	imageLocationDict[itemID] = itemImageLocs
 	imageHeightDict[itemID] = itemImageHeights
 	imageWidthDict[itemID] = itemImageWidths
 
@@ -148,7 +165,11 @@ for item in furniture_data:
 	dga_item_data = {}
 	dga_item_data["$ItemType"] = "Furniture"
 	dga_item_data["ID"] = itemID
-	dga_item_data["Type"] = furnitureTypesConversion[item["type"]] # This needs more data sanitizing/validation
+	if item["type"] in furnitureTypesConversion:
+		dga_item_data["Type"] = furnitureTypesConversion[item["type"]] # This needs more data sanitizing/validation
+	else:
+		dga_item_data["Type"] = furnitureTypesConversion["other"]
+		print("Bad item type for " + itemID + " of " + item["type"] + ", defaulting to 'other'")
 	# Save the item name and description into default.json
 	dga_default["furniture." + itemID + ".name"] = item["name"]
 	dga_default["furniture." + itemID + ".description"] = item["description"]
@@ -177,6 +198,13 @@ for item in furniture_data:
 			"DisplaySize": {"X": rotatedWidth, "Y": rotatedHeight}, 
 			"CollisionHeight": rotatedBoxHeight
 			})
+	if item["type"] == "chair":
+		for i in range(numRotations):
+			dgaConfigs[i]["Seats"] = [{"X": 0, "Y": 0}]
+			dgaConfigs[i]["SittingDirection"] = dgaSitDirections[i]
+			dgaConfigs[i]["FrontTexture"] = frontTilesheetName + ":0" # Placeholder
+	if item["type"] == "window":
+		dgaConfigs[0]["NightTexture"] = frontTilesheetName + ":0" # Placeholder
 	dga_item_data["Configurations"] = dgaConfigs
 	# Save to the json array
 	dga_data.append(dga_item_data)
@@ -229,11 +257,14 @@ for i in allImageWidths:
 	tilesheetWidth = tilesheetWidth*i//math.gcd(tilesheetWidth, i)
 tilesheetWidth = tilesheetWidth if tilesheetWidth > 12 else 12
 newTilesheet = Image.new(mode="RGBA",size=(tilesheetWidth*16,1200))
+frontTilesheet = Image.new(mode="RGBA",size=(tilesheetWidth*16,1200))
 for ht in allImageHeights:
 	for wth in allImageWidths:
 		for item in imageDict:
 			for im in imageDict[item]:
-				imInd = imageDict[item].index(im)
+				# Get the item index from the dictionary
+				imInd = imageLocationDict[item][imageDict[item].index(im)]
+				# Get the image size in tiles
 				imW, imH = im.size
 				imW = int(imW/16)
 				imH = int(imH/16)
@@ -259,13 +290,26 @@ for ht in allImageHeights:
 					if tilesheetHeight < imH * (((imageLoc * imW) // tilesheetWidth) + 1):
 						tilesheetHeight = imH * (((imageLoc * imW) // tilesheetWidth) + 1)
 					# Set the index in the relevant configuration
+					hasFront = False
 					for furn in dga_data:
 						if furn["ID"] == item:
-							furn["Configurations"][imInd]["Texture"] = dgaTilesheetName + ":" + str(imageLoc)
+							try:
+								furn["Configurations"][imInd]["Texture"] = dgaTilesheetName + ":" + str(imageLoc)
+								if "FrontTexture" in furn["Configurations"][imInd]:
+									furn["Configurations"][imInd]["FrontTexture"] = frontTilesheetName + ":" + str(imageLoc)
+									if imInd == 2:
+										hasFront = True
+								if "NightTexture" in furn["Configurations"][imInd]:
+									furn["Configurations"][imInd]["NightTexture"] = frontTilesheetName + ":" + str(imageLoc)
+							except:
+								furn["Configurations"][0][imInd] = dgaTilesheetName + ":" + str(imageLoc)
 					# Paste the image into the tilesheet
 					imXLoc = 16*((imageLoc * imW) % tilesheetWidth)
 					imYLoc = 16*(((imageLoc * imW) // tilesheetWidth) * imH)
 					newTilesheet.paste(im,(imXLoc,imYLoc))
+					# Paste the image into the front tilesheet if needed
+					if hasFront:
+						frontTilesheet.paste(im,(imXLoc,imYLoc))
 
 # Add the extra stuff to the CP json
 actual_cp_data = {
@@ -355,9 +399,11 @@ cp_i18n_path.mkdir(exist_ok=True)
 with cp_i18n_path.joinpath("default.json").open("w") as write_file:
 	json.dump(cp_default, write_file, indent=4)
 
-## Save the new DGA tilesheet
+## Save the new DGA tilesheets
 newTilesheet = newTilesheet.crop((0,0,tilesheetWidth*16,tilesheetHeight*16))
 newTilesheet.save(dga_folder_path.joinpath(dgaTilesheetName))
+frontTilesheet = frontTilesheet.crop((0,0,tilesheetWidth*16,tilesheetHeight*16))
+frontTilesheet.save(dga_folder_path.joinpath(frontTilesheetName))
 
 ## Save the CP tilesheets
 for tex in allTextures:
