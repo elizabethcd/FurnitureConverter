@@ -35,6 +35,7 @@ furnitureTypesConversion = {
 	"dresser": "Dresser",
 	"painting": "Painting",
 	"lamp": "Lamp",
+	"fireplace": "Fireplace",
 	"rug": "Rug",
 	"window": "Window",
 	"bookcase": "Decoration",
@@ -64,7 +65,8 @@ file_contents = folderPath.joinpath(filename).read_text()
 unused_chars, opening_bracket, rest_of_file = file_contents.partition("{")
 file_contents = opening_bracket + rest_of_file  # Discard the extra characters.
 
-# TODO: Some JSON files have curly quotes in them, it may be worth correcting them
+# Some JSON files have curly quotes in them, replace them with normal quotes
+file_contents = file_contents.replace(u'\u201c', '"').replace(u'\u201d', '"')
 
 try:
     # Try using the standard module first because it's fast and handles most cases.
@@ -79,6 +81,10 @@ file_contents = folderPath.joinpath("manifest.json").read_text()
 # Some third-party JSON files begin with extraneous characters - try to fix them up.
 unused_chars, opening_bracket, rest_of_file = file_contents.partition("{")
 file_contents = opening_bracket + rest_of_file  # Discard the extra characters.
+
+# Some JSON files have curly quotes in them, replace them with normal quotes
+file_contents = file_contents.replace(u'\u201c', '"').replace(u'\u201d', '"')
+
 try:
     # Try using the standard module first because it's fast and handles most cases.
 	manifest = json.loads(file_contents)
@@ -132,7 +138,7 @@ for item in furniture_data:
 	itemImageHeights.append(itemHeight)
 	# Check the number of rotations is valid for vanilla
 	if numRotations != 1 and numRotations != 2 and numRotations != 4:
-		print("Warning: number of rotations nonstandard. Defaulting to 1 rotation")
+		print("Warning: number of rotations (" + str(numRotations) + ") nonstandard. Defaulting to 1 rotation")
 	if numRotations == 2 or numRotations == 4:
 		imageCoords = (xLoc+16*itemWidth, yLoc, xLoc+16*itemWidth+16*rotatedWidth, yLoc+16*rotatedHeight)
 		itemImages.append(tilesheetImage.crop(imageCoords))
