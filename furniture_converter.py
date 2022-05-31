@@ -22,12 +22,15 @@ def main(CFfilename, originalLocation, tilesheetLocation):
 	parser.add_argument('--modName', type=str, required=True, help="Name of the mod (no spaces), should be identifying")
 	parser.add_argument('--modAuthor', type=str, required=False, help="Author of the original mod (no spaces)")
 	parser.add_argument('--fileName', type=str, required=False, help="Name of the json file where the original mod declared the furniture (no spaces)")
+	parser.add_argument('--sellAt', type=str, required=False, help="Name of shop to sell furniture at. Options are found at https://github.com/spacechase0/StardewValleyMods/blob/develop/DynamicGameAssets/docs/author-guide.md#valid-shop-ids-for-vanilla")
 	# Parse the argument
 	args = parser.parse_args()
 
 	# Set information based on inputs
 	modName = args.modName
 	CFfilename = CFfilename if args.fileName is None else args.fileName + ".json"
+	shouldSell = True if args.sellAt is not None else False
+	shopName = None if args.sellAt is None else args.sellAt
 
 	## Load up the furniture json!
 	folderPath = Path(originalLocation)
@@ -54,6 +57,7 @@ def main(CFfilename, originalLocation, tilesheetLocation):
 	dga_data = []
 	cp_default = {}
 	dga_default = {}
+	dga_shop_entries = []
 	allTextures = set()
 	imageDict = {}
 	imageLocationDict = {}
@@ -130,6 +134,15 @@ def main(CFfilename, originalLocation, tilesheetLocation):
 		dga_item_data["Configurations"] = dgaConfigs
 		# Save to the json array
 		dga_data.append(dga_item_data)
+		# If shop entries desired, save data for that
+		if shouldSell:
+			dga_shop_entries.append({
+				"$ItemType": "ShopEntry",
+			    "Item": { "Value": modAuthor + ".DGA." + modName + "/" + itemID },
+			    "ShopId": shopName,
+			    "MaxSold": 1,
+			    "Cost": itemPrice,
+			},)
 
 		#### CP
 		# Set up the basic furniture data
@@ -232,6 +245,13 @@ def main(CFfilename, originalLocation, tilesheetLocation):
 	    },
 	]
 
+	# Add shop entries json to DGA content if needed
+	if shouldSell:
+		dga_content_data.append({
+	        "$ItemType": "ContentIndex",
+	        "FilePath": "shopEntries.json"
+	    },)
+
 	# Make a new manifest for DGA
 	dga_manifest = {
 		"Name": manifest["Name"],
@@ -269,6 +289,8 @@ def main(CFfilename, originalLocation, tilesheetLocation):
 	save_json(dga_content_data, dga_folder_path, "content.json")
 	save_json(dga_manifest, dga_folder_path, "manifest.json")
 	save_json(dga_default, dga_i18n_path, "default.json")
+	if shouldSell:
+		save_json(dga_shop_entries, dga_folder_path, "shopEntries.json")
 
 	## Save all of the CP json files in an appropriately named folder
 	cp_folder_path = Path("[CP] " + manifest["Name"])
