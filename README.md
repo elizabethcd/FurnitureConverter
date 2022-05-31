@@ -22,11 +22,13 @@ Right now, this is not finished, and may fail if the CF json is formatted in an 
   * Putting `--modName SOMENAMEHERE` in is required. Some examples: BeechFurniture, FlowerPrideBanners, SpringFurniture
   * Putting `--fileName ORIGONALJSONANME` is required if the json file in the CF pack is not named `content.json`. Do not put `.json` into this, just the filename.
   * Putting `--modAuthor MODAUTHORNAME` is optional, but recommended if there's anything weird in the author field
-* It should create two new folders in the same folder as the script, one containing a DGA mod and one containing a CP mod. The two folders should be named something reasonable, and you should be able to use them as fully functional mods. 
+  * Putting `--sellAt SHOPNAME` is optional, and adds a json to the DGA mod that sells all the furniture at a specified store. The options for the store names are here: https://github.com/spacechase0/StardewValleyMods/blob/develop/DynamicGameAssets/docs/author-guide.md#valid-shop-ids-for-vanilla and putting in something that isn't there will either throw an error when the mod is loaded or just silently not work, I'm not sure which.
+* It should create two new folders in the same folder as the script, one containing a DGA mod and one containing a CP mod. **The CP mod will not work until a future version of the game.** The two folders should be named something reasonable, and you should be able to use them as fully functional mods. 
 
 ## Planned Improvements
 
-* Better error-checking/handling of furniture types
+* Error-checking on the shop names
+* Ability to handle multiple furniture jsons at once
 * Estimated FrontTexture support for armchairs from the side
 * Default sitting locations for couches, benches, and armchairs
-* Display name overrides for furniture categories
+* Display name overrides for furniture categories (requires DGA to update first though)
