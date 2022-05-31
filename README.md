@@ -25,6 +25,19 @@ Right now, this is not finished, and may fail if the CF json is formatted in an 
   * Putting `--sellAt SHOPNAME` is optional, and adds a json to the DGA mod that sells all the furniture at a specified store. The options for the store names are here: https://github.com/spacechase0/StardewValleyMods/blob/develop/DynamicGameAssets/docs/author-guide.md#valid-shop-ids-for-vanilla and putting in something that isn't there will either throw an error when the mod is loaded or just silently not work, I'm not sure which.
 * It should create two new folders in the same folder as the script, one containing a DGA mod and one containing a CP mod. **The CP mod will not work until a future version of the game.** The two folders should be named something reasonable, and you should be able to use them as fully functional mods. 
 
+## Simple Edits You Can Make Afterwards
+
+* You may want to add in or edit the front textures of the furniture. 
+  * As of right now that doesn't appear to be supported in CP, but conveniently in the DGA conversions there is a .png automatically created for front textures. You can then find the area corresponding to the view of the furniture in question on `dga_furniture_tilesheet.png`, and use an image editor to draw a front texture in the exact same area on `dga_front_tilesheet.png`. 
+  * If the furniture already has a front texture, you may notice the shadow is doubled. You can fix this by removing the shadow areas from `dga_front_tilesheet.png`.
+  * If the furniture has seats, the front texture will automatically be added by this script. (It's just sometimes a blank area of the .png.) If it doesn't, then you'll have to add a FrontTexture field to the configuration of the furniture in questions, which is a bit more advanced but is pretty easy: just copy the texture field, change the name to FrontTexture, and the png name from `dga_furniture_tilesheet.png` to `dga_front_tilesheet.png` (keep the colon and the number after the .png name). Check your commas afterwards!
+* You may want to change where the furniture is sold.
+  * You can do this by specifying a shop name, and then going into the DGA folder and finding `shopEntries.json` and editing the shop name in the entry corresponding to the furniture you want to be a different valid shop name. 
+* You may want to change when the furniture is sold.
+  * In this case you actually have to learn the DGA format, and use EnableConditions on the shop entries to selectively enable or disable the shop entries. 
+* You may want to change whether the furniture is sold in the catalogue.
+  * Again, you're going to have to learn the DGA format, but all you need to do is add the `ShowInCatalogue` property and set it to false.
+
 ## Planned Improvements
 
 * Error-checking on the shop names
