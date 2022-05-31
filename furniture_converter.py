@@ -293,7 +293,7 @@ def main(CFfilename, originalLocation, tilesheetLocation):
 		save_json(dga_shop_entries, dga_folder_path, "shopEntries.json")
 
 	## Save all of the CP json files in an appropriately named folder
-	cp_folder_path = Path("[CP] " + manifest["Name"])
+	cp_folder_path = Path("[CP] FOR ALPHA ONLY " + manifest["Name"])
 	cp_i18n_path = cp_folder_path.joinpath("i18n")
 	save_json(actual_cp_data, cp_folder_path,"content.json")
 	save_json(cp_manifest,cp_folder_path,"manifest.json")
