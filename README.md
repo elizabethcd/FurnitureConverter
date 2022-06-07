@@ -44,4 +44,5 @@ Right now, this is not finished, and may fail if the CF json is formatted in an 
 * Ability to handle multiple furniture jsons at once
 * Estimated FrontTexture support for armchairs from the side
 * Default sitting locations for couches, benches, and armchairs
+* Animated furniture converted automatically
 * Display name overrides for furniture categories (requires DGA to update first though)
