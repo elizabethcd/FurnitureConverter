@@ -12,6 +12,7 @@ Right now, this is not finished, and may fail if the CF json is formatted in an 
   * Similarly, type `pip install pillow` and hit return
   * Similarly, type `pip install argparse` and hit return
   * The other packages used should be default python packages, I believe
+  * If `pip` is returning command not found errors, you may need to install pip: https://pip.pypa.io/en/stable/installation/
 * Download the python script from Github (Green "Code" button, then "Download as .zip" option, then unzip)
 * Place the CF furniture mod to be converted into the same folder as the python script, and rename the folder to `original`
 * Use `cd` to navigate into the folder with the python script and the json, or open a terminal window in that folder
