@@ -8,7 +8,7 @@ Right now, this is not finished, and may fail if the CF json is formatted in an 
 
 * Install python 3 of some sort: https://www.python.org/downloads/
 * Install the packages used, if needed
-  * In a terminal window, type `pip install json5` and hit return 
+  * In a Terminal (Mac), Command Prompt (Windows), or (??) Linux window, type `pip install json5` and hit return 
   * Similarly, type `pip install pillow` and hit return
   * Similarly, type `pip install argparse` and hit return
   * The other packages used should be default python packages, I believe
