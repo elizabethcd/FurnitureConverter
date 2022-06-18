@@ -8,16 +8,15 @@ Right now, this is not finished, and may fail if the CF json is formatted in an 
 
 * Install python 3 of some sort: https://www.python.org/downloads/
 * Install the packages used, if needed
-  * In a Terminal (Mac), Command Prompt (Windows), or (??) Linux window, type `pip install json5` and hit return 
-  * Similarly, type `pip install pillow` and hit return
-  * Similarly, type `pip install argparse` and hit return
-  * The other packages used should be default python packages, I believe
-  * If `pip` is returning command not found errors, you may need to install pip: https://pip.pypa.io/en/stable/installation/
+  * In a Terminal (Mac) or (??) Linux window, type `pip install json5` and hit return. If you're in Windows, use Powershell and type ``py -m pip install json5`` instead.
+  * Similarly, type `pip install pillow` (or `py -m pip install pillow`) and hit return
+  * Similarly, type `pip install argparse` (or `py -m pip install argparse`) and hit return
+  * The other packages used should be default python packages
 * Download the python script from Github (Green "Code" button, then "Download as .zip" option, then unzip)
 * Place the CF furniture mod to be converted into the same folder as the python script, and rename the folder to `original`
 * Use `cd` to navigate into the folder with the python script and the json, or open a terminal window in that folder
   * On a Mac, see the detailed guide for three different ways to do this.
-  * On Windows, hold shift, right click in the folder background, and pick one of "Open in Command Prompt", "Open in PowerShell", or "Open in Windows Terminal" (depending on your system settings).
+  * On Windows, open File Explorer to the folder you want, click on the address bar, type `powershell`, and hit return.
   * Not sure what Linux does, but if you use Linux you probably know how to use `cd`
 * Type `python furniture_converter.py --modName SOMENAMEHERE` but with `SOMENAMEHERE` swapped out for a descriptive string into terminal and hit return
   * Putting `--modName SOMENAMEHERE` in is required. Some examples: BeechFurniture, FlowerPrideBanners, SpringFurniture
@@ -29,6 +28,9 @@ Right now, this is not finished, and may fail if the CF json is formatted in an 
 ## Detailed Tutorials on How to Use
 
 Here's a detailed guide on how to use this script, with screenshots, for Mac users: https://github.com/elizabethcd/FurnitureConverter/blob/main/docs/Mac_guide.md#mac-detailed-pictorial-install-guide
+
+Here's a detailed guide on how to use this script, with screenshots, for Windows users:
+https://github.com/elizabethcd/FurnitureConverter/blob/main/docs/Windows_guide.md#step-1-install-python
 
 ## Simple Edits You Can Make Afterwards
 
