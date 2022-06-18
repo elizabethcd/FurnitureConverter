@@ -30,7 +30,7 @@ Right now, this is not finished, and may fail if the CF json is formatted in an 
 Here's a detailed guide on how to use this script, with screenshots, for Mac users: https://github.com/elizabethcd/FurnitureConverter/blob/main/docs/Mac_guide.md#mac-detailed-pictorial-install-guide
 
 Here's a detailed guide on how to use this script, with screenshots, for Windows users:
-https://github.com/elizabethcd/FurnitureConverter/blob/main/docs/Windows_guide.md#step-1-install-python
+https://github.com/elizabethcd/FurnitureConverter/blob/main/docs/Windows_guide.md#windows-detailed-pictorial-install-guide
 
 ## Simple Edits You Can Make Afterwards
 
