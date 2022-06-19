@@ -47,9 +47,15 @@ https://github.com/elizabethcd/FurnitureConverter/blob/main/docs/Windows_guide.m
 
 ## Planned Improvements
 
-* Error-checking on the shop names
-* Ability to handle multiple furniture jsons at once
-* Estimated FrontTexture support for armchairs from the side
-* Default sitting locations for couches, benches, and armchairs
 * Animated furniture converted automatically
-* Display name overrides for furniture categories (requires DGA to update first though)
+* Error-checking on the shop names
+* Only save front textures image if needed
+* Add catalogue property for easier editing
+* Estimated FrontTexture support for armchairs from the side
+
+Could add if requested:
+* Ability to handle multiple furniture jsons at once
+
+Waiting on DGA update:
+* Default sitting locations for couches, benches, and armchairs
+* Display name overrides for furniture categories
