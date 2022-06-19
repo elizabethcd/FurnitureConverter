@@ -63,6 +63,8 @@ def main(CFfilename, originalLocation, tilesheetLocation):
 	imageLocationDict = {}
 	imageWidthDict = {}
 	imageHeightDict = {}
+	hasAnyFront = False
+	animatedImages = {}
 	for item in furniture_data:
 		#### Set up basic information
 		if not check_item(item):
@@ -85,15 +87,23 @@ def main(CFfilename, originalLocation, tilesheetLocation):
 		rotatedBoxHeight = item["rotatedBoxHeight"] if "rotatedBoxHeight" in item else rotatedHeight
 
 		#### Save textures for later
-		allTextures.add(itemTexture)
-		tilesheetImage = Image.open(folderPath.joinpath(itemTexture))
-		# Extract images, locations, widths, and heights from the texture image
-		itemImages, itemImageLocs, itemImageWidths, itemImageHeights = get_image_info(tilesheetImage, itemIndex, itemWidth, itemHeight, rotatedWidth, rotatedHeight, numRotations, itemType)
-		# Save data associated with textures of this item
-		imageDict[itemID] = itemImages
-		imageLocationDict[itemID] = itemImageLocs
-		imageHeightDict[itemID] = itemImageHeights
-		imageWidthDict[itemID] = itemImageWidths
+		if "animationFrames" in item:
+			## Save the animated images separately
+			numFrames = item["animationFrames"]
+			numRotations = 1
+			tilesheetImage = Image.open(folderPath.joinpath(itemTexture))
+			itemImage = get_animated_image_info(tilesheetImage, itemIndex, itemWidth, itemHeight, numFrames)
+			animatedImages[itemID] = itemImage
+		else:
+			allTextures.add(itemTexture)
+			tilesheetImage = Image.open(folderPath.joinpath(itemTexture))
+			# Extract images, locations, widths, and heights from the texture image
+			itemImages, itemImageLocs, itemImageWidths, itemImageHeights = get_image_info(tilesheetImage, itemIndex, itemWidth, itemHeight, rotatedWidth, rotatedHeight, numRotations, itemType)
+			# Save data associated with textures of this item
+			imageDict[itemID] = itemImages
+			imageLocationDict[itemID] = itemImageLocs
+			imageHeightDict[itemID] = itemImageHeights
+			imageWidthDict[itemID] = itemImageWidths
 
 		#### DGA
 		# Set up the basic furniture data
@@ -105,7 +115,10 @@ def main(CFfilename, originalLocation, tilesheetLocation):
 		dga_default["furniture." + itemID + ".name"] = itemName
 		dga_default["furniture." + itemID + ".description"] = itemDescription
 		# Generate the different configurations
-		dgaItemTexture = dgaTilesheetName + ":0" # Placeholder
+		if "animationFrames" in item:
+			dgaItemTexture = "animated/" + itemID + ":0.." + str(item["animationFrames"]-1)
+		else:
+			dgaItemTexture = dgaTilesheetName + ":0" # Placeholder
 		dgaConfigs = [ {
 			"Texture": dgaItemTexture, 
 			"DisplaySize": {"X": itemWidth, "Y": itemHeight}, 
@@ -128,8 +141,10 @@ def main(CFfilename, originalLocation, tilesheetLocation):
 				"DisplaySize": {"X": rotatedWidth, "Y": rotatedHeight}, 
 				"CollisionHeight": rotatedBoxHeight
 				})
-		dgaConfigs = add_dga_seats(dgaConfigs, itemType, itemName, numRotations, itemWidth)
-		if itemType == "window" or itemType == "lamp" or itemType == "sconce":
+		if hasSeats(itemType, itemName):
+			dgaConfigs = add_dga_seats(dgaConfigs, itemType, itemName, numRotations, itemWidth)
+			hasAnyFront = True
+		if "animationFrames" not in item and (itemType == "window" or itemType == "lamp" or itemType == "sconce"):
 			dgaConfigs[0]["NightTexture"] = frontTilesheetName + ":0" # Placeholder
 		dga_item_data["Configurations"] = dgaConfigs
 		# Save to the json array
@@ -302,8 +317,14 @@ def main(CFfilename, originalLocation, tilesheetLocation):
 	## Save the new DGA tilesheets
 	newTilesheet = newTilesheet.crop((0,0,tilesheetWidth*16,tilesheetHeight*16))
 	newTilesheet.save(dga_folder_path.joinpath(dgaTilesheetName))
-	frontTilesheet = frontTilesheet.crop((0,0,tilesheetWidth*16,tilesheetHeight*16))
-	frontTilesheet.save(dga_folder_path.joinpath(frontTilesheetName))
+	if hasAnyFront:
+		frontTilesheet = frontTilesheet.crop((0,0,tilesheetWidth*16,tilesheetHeight*16))
+		frontTilesheet.save(dga_folder_path.joinpath(frontTilesheetName))
+	if animatedImages:
+		dga_anim_path = dga_folder_path.joinpath("animated")
+		dga_anim_path.mkdir(exist_ok=True)
+		for imName, im in animatedImages.items():
+			im.save(dga_anim_path.joinpath(imName + ".png"))
 
 	## Save the CP tilesheets
 	for tex in allTextures:
@@ -421,6 +442,15 @@ def get_image_info(tilesheetImage, itemIndex, itemWidth, itemHeight, rotatedWidt
 		itemImageHeights.append(itemHeight)
 	return itemImages, itemImageLocs, itemImageWidths, itemImageHeights
 
+def get_animated_image_info(tilesheetImage, itemIndex, itemWidth, itemHeight, numFrames):
+	w, h = tilesheetImage.size
+	tilesheetWide = w/16
+	tilesheetTall = h/16
+	xLoc = (itemIndex % tilesheetWide) * 16
+	yLoc = (itemIndex // tilesheetWide) * 16
+	imageCoords = (xLoc, yLoc, xLoc+16*itemWidth*numFrames, yLoc+16*itemHeight)
+	return tilesheetImage.crop(imageCoords)
+
 def get_dga_type(itemID, itemType):
 	furnitureTypesConversion = {
 		"chair": "Decoration",
@@ -510,6 +540,12 @@ def add_dga_seats(dgaConfigs, itemType, itemName, numRotations, itemWidth):
 	# Put the bench seats in if it's a bench
 	# Put the couch seats in if it's a couch
 	return dgaConfigs
+
+def hasSeats(itemType, itemName):
+	if itemType == "chair" or itemType == "armchair" or itemType == "bench" or itemType == "couch" or itemType == "stool" or "stool" in itemName.lower():
+		return True
+	else:
+		return False
 
 def get_all_widths_heights(imageWidthDict, imageHeightDict):
 	allImageHeights = [];
