@@ -51,7 +51,7 @@ https://github.com/elizabethcd/FurnitureConverter/blob/main/docs/Linux_guide.md#
 ## Notes on Functionality
 
 * **Tables and dressers** should work great out of the box! You can put things on/in them respectively.
-* Out of **chairs, armchairs, benches, couches, and stools** right now only stools and chairs have their sets automatically added. Pending an upcoming DGA update, the missing ones should be added soon. 
+* For **chairs, armchairs, benches, couches, and stools** right now the seat locations are automatically added but may have slightly odd locations. Pending an upcoming DGA update, they will default to the vanilla behavior. 
 * **Windows, lamps, and sconces** automatically have nighttime textures that are different from the daytime ones. When the original furniture didn't include this, this may result in weirdness. Simply delete the line about NightTexture to make it not change texture at nightfall.
 * **Animated furniture** currently is only allowed to have 1 rotation, and cannot change textures at nightfall. This is a limitation not in DGA, but in how I read in textures and information from CF. As I am not aware of any examples that do not follow these rules, I consider these limitations acceptable. If you want to add this feature to any of your DGA furniture, it's as simple as setting a NightTexture field or additional Configurations. Either way will require either a new tilesheet or extending the existing tilesheets, so you may wish to consult the DGA docs or a tutorial on DGA furniture. 
 
@@ -63,5 +63,5 @@ Could add if requested:
 * Ability to handle multiple furniture jsons at once
 
 Waiting on DGA update:
-* Default sitting locations for couches, benches, and armchairs
+* Use chair, couch, bench, and armchair DGA types for those CF types to have default seats
 * Display name overrides for furniture categories
