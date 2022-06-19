@@ -17,7 +17,7 @@ Right now, this is not finished, and may fail if the CF json is formatted in an 
 * Use `cd` to navigate into the folder with the python script and the json, or open a terminal window in that folder
   * On a Mac, see the detailed guide for three different ways to do this.
   * On Windows, open File Explorer to the folder you want, click on the address bar, type `powershell`, and hit return.
-  * If you use Linux you should probably know how to use `cd` (or see Mac guide)
+  * If you use Linux you can check out info on `cd` for your distro (or see Mac guide)
 * Type `python furniture_converter.py --modName SOMENAMEHERE` but with `SOMENAMEHERE` swapped out for a descriptive string into terminal and hit return
   * Putting `--modName SOMENAMEHERE` in is required. Some examples: BeechFurniture, FlowerPrideBanners, SpringFurniture
   * Putting `--fileName ORIGONALJSONANME` is required if the json file in the CF pack is not named `content.json`. Do not put `.json` into this, just the filename.
@@ -32,7 +32,7 @@ Here's a detailed guide on how to use this script, with screenshots, for Mac use
 Here's a detailed guide on how to use this script, with screenshots, for Windows users:
 https://github.com/elizabethcd/FurnitureConverter/blob/main/docs/Windows_guide.md#windows-detailed-pictorial-install-guide
 
-If you're a Linux user, the Mac guide should pretty much work. Otherwise, you're probably going to have to ask a Linux resource what's wrong.
+If you're a Linux user, the Mac guide should pretty much work. Otherwise, you're probably going to have to ask a Linux resource what's wrong. (Ideally one specific to your distro, but I hear the Arch Linux wiki and AskUbuntu might be good resources.)
 
 ## Simple Edits You Can Make Afterwards
 
