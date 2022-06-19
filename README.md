@@ -40,6 +40,7 @@ https://github.com/elizabethcd/FurnitureConverter/blob/main/docs/Linux_guide.md#
 * You may want to add in or edit the front textures of the furniture. 
   * As of right now that doesn't appear to be supported in CP, but conveniently in the DGA conversions there is a .png automatically created for front textures. You can then find the area corresponding to the view of the furniture in question on `dga_furniture_tilesheet.png`, and use an image editor to draw a front texture in the exact same area on `dga_front_tilesheet.png`. 
   * If the furniture already has a front texture, you may notice the shadow is doubled. You can fix this by removing the shadow areas from `dga_front_tilesheet.png`.
+  * If the furniture already has a front texture, you may notice it's not optimized to look nice. This is because the side arms of armchairs and couches are approximate.
   * If the furniture has seats, the front texture will automatically be added by this script. (It's just sometimes a blank area of the .png.) If it doesn't, then you'll have to add a FrontTexture field to the configuration of the furniture in questions, which is a bit more advanced but is pretty easy: just copy the texture field, change the name to FrontTexture, and the png name from `dga_furniture_tilesheet.png` to `dga_front_tilesheet.png` (keep the colon and the number after the .png name). Check your commas afterwards!
 * You may want to change where the furniture is sold.
   * You can do this by specifying a shop name, and then going into the DGA folder and finding `shopEntries.json` and editing the shop name in the entry corresponding to the furniture you want to be a different valid shop name. 
@@ -56,8 +57,6 @@ https://github.com/elizabethcd/FurnitureConverter/blob/main/docs/Linux_guide.md#
 * **Animated furniture** currently is only allowed to have 1 rotation, and cannot change textures at nightfall. This is a limitation not in DGA, but in how I read in textures and information from CF. As I am not aware of any examples that do not follow these rules, I consider these limitations acceptable. If you want to add this feature to any of your DGA furniture, it's as simple as setting a NightTexture field or additional Configurations. Either way will require either a new tilesheet or extending the existing tilesheets, so you may wish to consult the DGA docs or a tutorial on DGA furniture. 
 
 ## Planned Improvements
-
-* Estimated FrontTexture support for armchairs from the side
 
 Could add if requested:
 * Ability to handle multiple furniture jsons at once
