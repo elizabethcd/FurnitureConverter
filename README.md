@@ -42,10 +42,10 @@ If you're a Linux user, the Mac guide should pretty much work. Otherwise, you're
   * If the furniture has seats, the front texture will automatically be added by this script. (It's just sometimes a blank area of the .png.) If it doesn't, then you'll have to add a FrontTexture field to the configuration of the furniture in questions, which is a bit more advanced but is pretty easy: just copy the texture field, change the name to FrontTexture, and the png name from `dga_furniture_tilesheet.png` to `dga_front_tilesheet.png` (keep the colon and the number after the .png name). Check your commas afterwards!
 * You may want to change where the furniture is sold.
   * You can do this by specifying a shop name, and then going into the DGA folder and finding `shopEntries.json` and editing the shop name in the entry corresponding to the furniture you want to be a different valid shop name. 
+* You may want to change whether the furniture is sold in the catalogue.
+  * All you need to do is set the `ShowInCatalogue` property to false (it's listed and true by default).
 * You may want to change when the furniture is sold.
   * In this case you actually have to learn the DGA format, and use EnableConditions on the shop entries to selectively enable or disable the shop entries. 
-* You may want to change whether the furniture is sold in the catalogue.
-  * Again, you're going to have to learn the DGA format, but all you need to do is add the `ShowInCatalogue` property and set it to false.
 
 ## Notes on Functionality
 
