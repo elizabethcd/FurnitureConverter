@@ -117,7 +117,8 @@ def main(CFfilename, originalLocation, tilesheetLocation):
 		dga_default["furniture." + itemID + ".description"] = itemDescription
 		# Generate the different configurations
 		if "animationFrames" in item:
-			dgaItemTexture = "animated/" + itemID + ".png:0.." + str(item["animationFrames"]-1)
+			speed = 60//item["fps"] if ("fps" in item and item["fps"] > 0) else 12
+			dgaItemTexture = "animated/" + itemID + ".png:0.." + str(item["animationFrames"]-1) + "@" + str(speed)
 		else:
 			dgaItemTexture = dgaTilesheetName + ":0" # Placeholder
 		dgaConfigs = [ {
