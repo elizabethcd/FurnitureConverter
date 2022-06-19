@@ -63,7 +63,6 @@ def main(CFfilename, originalLocation, tilesheetLocation):
 	imageLocationDict = {}
 	imageWidthDict = {}
 	imageHeightDict = {}
-	hasAnyFront = False
 	animatedImages = {}
 	for item in furniture_data:
 		#### Set up basic information
@@ -143,7 +142,6 @@ def main(CFfilename, originalLocation, tilesheetLocation):
 				})
 		if hasSeats(itemType, itemName):
 			dgaConfigs = add_dga_seats(dgaConfigs, itemType, itemName, numRotations, itemWidth)
-			hasAnyFront = True
 		if "animationFrames" not in item and (itemType == "window" or itemType == "lamp" or itemType == "sconce"):
 			dgaConfigs[0]["NightTexture"] = frontTilesheetName + ":0" # Placeholder
 		dga_item_data["Configurations"] = dgaConfigs
@@ -317,9 +315,8 @@ def main(CFfilename, originalLocation, tilesheetLocation):
 	## Save the new DGA tilesheets
 	newTilesheet = newTilesheet.crop((0,0,tilesheetWidth*16,tilesheetHeight*16))
 	newTilesheet.save(dga_folder_path.joinpath(dgaTilesheetName))
-	if hasAnyFront:
-		frontTilesheet = frontTilesheet.crop((0,0,tilesheetWidth*16,tilesheetHeight*16))
-		frontTilesheet.save(dga_folder_path.joinpath(frontTilesheetName))
+	frontTilesheet = frontTilesheet.crop((0,0,tilesheetWidth*16,tilesheetHeight*16))
+	frontTilesheet.save(dga_folder_path.joinpath(frontTilesheetName))
 	if animatedImages:
 		dga_anim_path = dga_folder_path.joinpath("animated")
 		dga_anim_path.mkdir(exist_ok=True)
