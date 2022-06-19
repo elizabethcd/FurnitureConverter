@@ -110,6 +110,7 @@ def main(CFfilename, originalLocation, tilesheetLocation):
 		dga_item_data["$ItemType"] = "Furniture"
 		dga_item_data["ID"] = itemID
 		dga_item_data["Type"] = get_dga_type(itemID, itemType)
+		dga_item_data["FakeType"] = itemType # Save the original item type for reference later (will be removed)
 		dga_item_data["ShowInCatalogue"] = True
 		# Save the item name and description into default.json
 		dga_default["furniture." + itemID + ".name"] = itemName
@@ -207,6 +208,7 @@ def main(CFfilename, originalLocation, tilesheetLocation):
 							tilesheetHeight = imH * (((imageLoc * imW) // tilesheetWidth) + 1)
 						# Set the index in the relevant configuration
 						hasFront = False
+						frontIsForSideView = False
 						for furn in dga_data:
 							if furn["ID"] == item:
 								try:
@@ -216,6 +218,10 @@ def main(CFfilename, originalLocation, tilesheetLocation):
 										# Add a real front texture if the player is sitting facing upwards
 										if furn["Configurations"][imInd]["SittingDirection"] == "Up":
 											hasFront = True
+										# Add a partial front texture to the sides of armchairs and couches
+										if (furn["Configurations"][imInd]["SittingDirection"] == "Right" or furn["Configurations"][imInd]["SittingDirection"] == "Left") and (furn["FakeType"] == "armchair" or furn["FakeType"] == "couch"):
+											hasFront = True
+											frontIsForSideView = True
 									if "NightTexture" in furn["Configurations"][imInd]:
 										furn["Configurations"][imInd]["NightTexture"] = frontTilesheetName + ":" + str(imageLoc)
 								except:
@@ -229,7 +235,14 @@ def main(CFfilename, originalLocation, tilesheetLocation):
 						newTilesheet.paste(im,(imXLoc,imYLoc))
 						# Paste the image into the front tilesheet if needed
 						if hasFront:
+							# For the furniture with "arms", add a front texture that's the bottom tile of the side view
+							if frontIsForSideView:
+								im = im.crop((0, (imH-1)*16, imW*16, imH*16))
 							frontTilesheet.paste(im,(imXLoc,imYLoc))
+	# Remove the fake item types
+	for furn in dga_data:
+		furn.pop("FakeType", None)
+
 
 	# Add the extra stuff to the CP json
 	actual_cp_data = {
