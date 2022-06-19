@@ -548,9 +548,51 @@ def add_dga_seats(dgaConfigs, itemType, itemName, numRotations, itemWidth):
 				dgaConfigs[i]["FrontTexture"] = frontTilesheetName + ":0" # Placeholder
 		return dgaConfigs
 
-	# Put the armchair seats in if it's an armchair
-	# Put the bench seats in if it's a bench
-	# Put the couch seats in if it's a couch
+	armchairSeats = [{"X": 0.5, "Y": 0},{"X": 1, "Y": 0},{"X": 0.5, "Y": 0},{"X": 0, "Y": 0}]
+	if itemType == "armchair":
+		for i in range(numRotations):
+			if i < len(dgaConfigs):
+				dgaConfigs[i]["Seats"] = [armchairSeats[i]]
+				dgaConfigs[i]["SittingDirection"] = sitDirections[i]
+				dgaConfigs[i]["FrontTexture"] = frontTilesheetName + ":0" # Placeholder
+		return dgaConfigs
+
+	if itemType == "couch":
+		for i in range(numRotations):
+			if i < len(dgaConfigs):
+				seatLocs = []
+				for s in range(itemWidth - 1):
+					if i == 0:
+						seatLocs.append({"X": s+1, "Y": 0})
+					elif (i == 1 and numRotations == 4):
+						seatLocs.append({"X": 1, "Y": s+1})
+					elif (i == 2 and numRotations == 4) or (i == 1 and numRotations == 2):
+						seatLocs.append({"X": s+1, "Y": 0})
+					elif i == 3:
+						seatLocs.append({"X": 0, "Y": s+1})
+					dgaConfigs[i]["Seats"] = seatLocs
+				dgaConfigs[i]["SittingDirection"] = sitDirections[i]
+				dgaConfigs[i]["FrontTexture"] = frontTilesheetName + ":0" # Placeholder
+		return dgaConfigs
+
+	if itemType == "bench":
+		for i in range(numRotations):
+			if i < len(dgaConfigs):
+				seatLocs = []
+				for s in range(itemWidth):
+					if i == 0:
+						seatLocs.append({"X": s+0.5, "Y": 0})
+					elif (i == 1 and numRotations == 4):
+						seatLocs.append({"X": 1, "Y": s+0.5})
+					elif (i == 2 and numRotations == 4) or (i == 1 and numRotations == 2):
+						seatLocs.append({"X": s+0.5, "Y": 0})
+					elif i == 3:
+						seatLocs.append({"X": 0, "Y": s+0.5})
+					dgaConfigs[i]["Seats"] = seatLocs
+				dgaConfigs[i]["SittingDirection"] = sitDirections[i]
+				dgaConfigs[i]["FrontTexture"] = frontTilesheetName + ":0" # Placeholder
+		return dgaConfigs
+
 	return dgaConfigs
 
 def hasSeats(itemType, itemName):
