@@ -57,7 +57,6 @@ If you're a Linux user, the Mac guide should pretty much work. Otherwise, you're
 ## Planned Improvements
 
 * Error-checking on the shop names
-* Add catalogue property for easier editing
 * Estimated FrontTexture support for armchairs from the side
 
 Could add if requested:
