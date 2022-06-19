@@ -42,17 +42,21 @@ If you're a Linux user, the Mac guide should pretty much work. Otherwise, you're
   * If the furniture has seats, the front texture will automatically be added by this script. (It's just sometimes a blank area of the .png.) If it doesn't, then you'll have to add a FrontTexture field to the configuration of the furniture in questions, which is a bit more advanced but is pretty easy: just copy the texture field, change the name to FrontTexture, and the png name from `dga_furniture_tilesheet.png` to `dga_front_tilesheet.png` (keep the colon and the number after the .png name). Check your commas afterwards!
 * You may want to change where the furniture is sold.
   * You can do this by specifying a shop name, and then going into the DGA folder and finding `shopEntries.json` and editing the shop name in the entry corresponding to the furniture you want to be a different valid shop name. 
+* You may want to change whether the furniture is sold in the catalogue.
+  * All you need to do is set the `ShowInCatalogue` property to false (it's listed and true by default).
 * You may want to change when the furniture is sold.
   * In this case you actually have to learn the DGA format, and use EnableConditions on the shop entries to selectively enable or disable the shop entries. 
-* You may want to change whether the furniture is sold in the catalogue.
-  * Again, you're going to have to learn the DGA format, but all you need to do is add the `ShowInCatalogue` property and set it to false.
+
+## Notes on Functionality
+
+* **Tables and dressers** should work great out of the box! You can put things on/in them respectively.
+* Out of **chairs, armchairs, benches, couches, and stools** right now only stools and chairs have their sets automatically added. Pending an upcoming DGA update, the missing ones should be added soon. 
+* **Windows, lamps, and sconces** automatically have nighttime textures that are different from the daytime ones. When the original furniture didn't include this, this may result in weirdness. Simply delete the line about NightTexture to make it not change texture at nightfall.
+* **Animated furniture** currently is only allowed to have 1 rotation, and cannot change textures at nightfall. This is a limitation not in DGA, but in how I read in textures and information from CF. As I am not aware of any examples that do not follow these rules, I consider these limitations acceptable. If you want to add this feature to any of your DGA furniture, it's as simple as setting a NightTexture field or additional Configurations. Either way will require either a new tilesheet or extending the existing tilesheets, so you may wish to consult the DGA docs or a tutorial on DGA furniture. 
 
 ## Planned Improvements
 
-* Animated furniture converted automatically
 * Error-checking on the shop names
-* Only save front textures image if needed
-* Add catalogue property for easier editing
 * Estimated FrontTexture support for armchairs from the side
 
 Could add if requested:
