@@ -47,11 +47,16 @@ If you're a Linux user, the Mac guide should pretty much work. Otherwise, you're
 * You may want to change whether the furniture is sold in the catalogue.
   * Again, you're going to have to learn the DGA format, but all you need to do is add the `ShowInCatalogue` property and set it to false.
 
+## Notes on Functionality
+
+* **Tables and dressers** should work great out of the box! You can put things on/in them respectively.
+* Out of **chairs, armchairs, benches, couches, and stools** right now only stools and chairs have their sets automatically added. Pending an upcoming DGA update, the missing ones should be added soon. 
+* **Windows, lamps, and sconces** automatically have nighttime textures that are different from the daytime ones. When the original furniture didn't include this, this may result in weirdness. Simply delete the line about NightTexture to make it not change texture at nightfall.
+* **Animated furniture** currently is only allowed to have 1 rotation, and cannot change textures at nightfall. This is a limitation not in DGA, but in how I read in textures and information from CF. As I am not aware of any examples that do not follow these rules, I consider these limitations acceptable. If you want to add this feature to any of your DGA furniture, it's as simple as setting a NightTexture field or additional Configurations. Either way will require either a new tilesheet or extending the existing tilesheets, so you may wish to consult the DGA docs or a tutorial on DGA furniture. 
+
 ## Planned Improvements
 
-* Animated furniture converted automatically
 * Error-checking on the shop names
-* Only save front textures image if needed
 * Add catalogue property for easier editing
 * Estimated FrontTexture support for armchairs from the side
 
