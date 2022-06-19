@@ -32,7 +32,8 @@ Here's a detailed guide on how to use this script, with screenshots, for Mac use
 Here's a detailed guide on how to use this script, with screenshots, for Windows users:
 https://github.com/elizabethcd/FurnitureConverter/blob/main/docs/Windows_guide.md#windows-detailed-pictorial-install-guide
 
-If you're a Linux user, the Mac guide should pretty much work. Otherwise, you're probably going to have to ask a Linux resource what's wrong. (Ideally one specific to your distro, but I hear the Arch Linux wiki and AskUbuntu might be good resources.)
+Here's a detailed guide on how to use this script, with screenshots, for Linux users (thank you to Gerber for making it!):
+https://github.com/elizabethcd/FurnitureConverter/blob/main/docs/Linux_guide.md#linux-detailed-pictorial-install-guide
 
 ## Simple Edits You Can Make Afterwards
 
@@ -56,7 +57,6 @@ If you're a Linux user, the Mac guide should pretty much work. Otherwise, you're
 
 ## Planned Improvements
 
-* Error-checking on the shop names
 * Estimated FrontTexture support for armchairs from the side
 
 Could add if requested:
