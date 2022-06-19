@@ -110,6 +110,7 @@ def main(CFfilename, originalLocation, tilesheetLocation):
 		dga_item_data["$ItemType"] = "Furniture"
 		dga_item_data["ID"] = itemID
 		dga_item_data["Type"] = get_dga_type(itemID, itemType)
+		dga_item_data["ShowInCatalogue"] = True
 		# Save the item name and description into default.json
 		dga_default["furniture." + itemID + ".name"] = itemName
 		dga_default["furniture." + itemID + ".description"] = itemDescription
