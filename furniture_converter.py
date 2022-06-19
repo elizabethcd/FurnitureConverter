@@ -30,7 +30,7 @@ def main(CFfilename, originalLocation, tilesheetLocation):
 	modName = args.modName
 	CFfilename = CFfilename if args.fileName is None else args.fileName + ".json"
 	shouldSell = True if args.sellAt is not None else False
-	shopName = None if args.sellAt is None else args.sellAt
+	shopName = None if args.sellAt is None else check_shop_name(args.sellAt)
 
 	## Load up the furniture json!
 	folderPath = Path(originalLocation)
@@ -448,6 +448,20 @@ def get_animated_image_info(tilesheetImage, itemIndex, itemWidth, itemHeight, nu
 	yLoc = (itemIndex // tilesheetWide) * 16
 	imageCoords = (xLoc, yLoc, xLoc+16*itemWidth*numFrames, yLoc+16*itemHeight)
 	return tilesheetImage.crop(imageCoords)
+
+def check_shop_name(shopName):
+	validShopIDs = ["BlueBoat","GeMagic","FishShop","Club","DesertMerchant",
+		"Sandy","HatMouse","AnimalSupplies","TravelingMerchant","IslandMerchant",
+		"QiGemShop","ResortBar","VolcanoShop","AdventurerGuild","Dwarf",
+		"Carpenter","Blacksmith","Hospital","IceCreamStand","Joja","Krobus",
+		"Theater_BoxOffice","SeedShop","Saloon","Festival.spring13","Festival.spring24",
+		"Festival.summer11","Festival.summer28","Festival.fall16","Festival.fall27",
+		"Festival.winter8","Festival.winter25"]
+	if shopName in validShopIDs:
+		return shopName
+	else:
+		print("Shop name to sell at not valid, defaulting to Robin's shop.")
+		return "Carpenter"
 
 def get_dga_type(itemID, itemType):
 	furnitureTypesConversion = {
