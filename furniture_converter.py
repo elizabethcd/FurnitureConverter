@@ -49,7 +49,7 @@ def main(CFfilename, originalLocation, tilesheetLocation):
 		if not f.is_file():
 			continue
 			
-		data = load_json(folderPath, CFfilename)
+		data = load_json(folderPath, f.name)
 		# Check that the furniture json is not empty
 		if not data or "furniture" not in data:
 			print("No furniture in furniture json, quitting...")
