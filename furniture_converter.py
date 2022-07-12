@@ -21,14 +21,12 @@ def main(CFfilename, originalLocation, tilesheetLocation):
 	# Add an argument
 	parser.add_argument('--modName', type=str, required=True, help="Name of the mod (no spaces), should be identifying")
 	parser.add_argument('--modAuthor', type=str, required=False, help="Author of the original mod (no spaces)")
-	parser.add_argument('--fileName', type=str, required=False, help="Name of the json file where the original mod declared the furniture (no spaces)")
 	parser.add_argument('--sellAt', type=str, required=False, help="Name of shop to sell furniture at. Options are found at https://github.com/spacechase0/StardewValleyMods/blob/develop/DynamicGameAssets/docs/author-guide.md#valid-shop-ids-for-vanilla")
 	# Parse the argument
 	args = parser.parse_args()
 
 	# Set information based on inputs
 	modName = args.modName
-	CFfilename = CFfilename if args.fileName is None else args.fileName + ".json"
 	shouldSell = True if args.sellAt is not None else False
 	shopName = None if args.sellAt is None else check_shop_name(args.sellAt)
 
@@ -63,7 +61,6 @@ def main(CFfilename, originalLocation, tilesheetLocation):
 	uniqueString = modAuthor + "." + modName
 
 	#### Time to process!
-	furniture_data = data["furniture"]
 	cp_data = {}
 	dga_data = []
 	cp_default = {}
