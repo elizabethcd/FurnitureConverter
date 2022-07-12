@@ -7,7 +7,7 @@ from PIL import Image
 from pathlib import Path
 
 #### Important inputs
-CFfilename = "content.json"
+CFfilename = "*.json"
 originalLocation = "original"
 tilesheetLocation = "Mods"
 dgaTilesheetName = "dga_furniture_tilesheet.png"
@@ -34,18 +34,29 @@ def main(CFfilename, originalLocation, tilesheetLocation):
 
 	## Load up the furniture json!
 	folderPath = Path(originalLocation)
-	data = load_json(folderPath, CFfilename)
-	# Check that the furniture json is not empty
-	if not data or "furniture" not in data:
-		print("No furniture in furniture json, quitting...")
-		return
-
+	
 	## Read the manifest json in as text
 	manifest = load_json(folderPath, "manifest.json")
 	# Check that the manifest contains the necessary information
 	if not check_manifest(manifest):
 		print("Malformed manifest, quitting...")
 		return
+	
+	furniture_data = []
+	
+	## check individual files
+	for f in folderPath.glob(CFfilename):
+		if not f.is_file():
+			continue
+			
+		data = load_json(folderPath, f.name)
+		if f.name == "manifest.json": continue
+		# Check that the furniture json is not empty
+		if not data or "furniture" not in data:
+			print("No furniture in %s json, skipping..." % f.name)
+			continue
+		furniture_data.extend(data["furniture"])
+
 
 	# Gather useful data out of the manifest
 	modAuthor = args.modAuthor if args.modAuthor is not None else manifest["Author"]
