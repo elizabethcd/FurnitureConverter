@@ -50,8 +50,7 @@ def main(CFfilename, originalLocation, tilesheetLocation):
 			continue
 			
 		data = load_json(folderPath, f.name)
-		if f.name == "manifest.json":
-		        continue
+		if f.name == "manifest.json": continue
 		# Check that the furniture json is not empty
 		if not data or "furniture" not in data:
 			print("No furniture in %s json, skipping..." % f.name)
