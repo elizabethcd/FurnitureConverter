@@ -71,6 +71,7 @@ def main(CFfilename, originalLocation, tilesheetLocation):
 	imageWidthDict = {}
 	imageHeightDict = {}
 	animatedImages = {}
+	count = 0
 	for item in furniture_data:
 		#### Set up basic information
 		if not check_item(item):
@@ -81,7 +82,7 @@ def main(CFfilename, originalLocation, tilesheetLocation):
 		itemIndex = item["index"]
 		itemWidth = item["width"]
 		itemHeight = item["height"]
-		itemID = re.sub("[^a-zA-Z]+", "", itemName) + str(item["id"])
+		itemID = re.sub("[^a-zA-Z]+", "", itemName) + str(count)
 		itemType = item["type"] if "type" in item else "other"
 		itemDescription = item["description"] if "description" in item else "A piece of furniture."
 		itemPrice = item["price"] if "price" in item else 100
@@ -110,6 +111,8 @@ def main(CFfilename, originalLocation, tilesheetLocation):
 			imageLocationDict[itemID] = itemImageLocs
 			imageHeightDict[itemID] = itemImageHeights
 			imageWidthDict[itemID] = itemImageWidths
+
+		count = count + 1
 
 		#### DGA
 		# Set up the basic furniture data
