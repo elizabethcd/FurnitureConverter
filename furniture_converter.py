@@ -55,7 +55,6 @@ def main(CFfilename, originalLocation, tilesheetLocation):
 			continue
 		furniture_data.extend(data["furniture"])
 
-
 	# Gather useful data out of the manifest
 	modAuthor = args.modAuthor if args.modAuthor is not None else manifest["Author"]
 	uniqueString = modAuthor + "." + modName
@@ -335,11 +334,12 @@ def main(CFfilename, originalLocation, tilesheetLocation):
 	save_json(cp_manifest,cp_folder_path,"manifest.json")
 	save_json(cp_default, cp_i18n_path, "default.json")
 
-	## Save the new DGA tilesheets
-	newTilesheet = newTilesheet.crop((0,0,tilesheetWidth*16,tilesheetHeight*16))
-	newTilesheet.save(dga_folder_path.joinpath(dgaTilesheetName))
-	frontTilesheet = frontTilesheet.crop((0,0,tilesheetWidth*16,tilesheetHeight*16))
-	frontTilesheet.save(dga_folder_path.joinpath(frontTilesheetName))
+	## Save the new DGA tilesheets if needed
+	if tilesheetHeight > 0:
+		newTilesheet = newTilesheet.crop((0,0,tilesheetWidth*16,tilesheetHeight*16))
+		newTilesheet.save(dga_folder_path.joinpath(dgaTilesheetName))
+		frontTilesheet = frontTilesheet.crop((0,0,tilesheetWidth*16,tilesheetHeight*16))
+		frontTilesheet.save(dga_folder_path.joinpath(frontTilesheetName))
 	if animatedImages:
 		dga_anim_path = dga_folder_path.joinpath("animated")
 		dga_anim_path.mkdir(exist_ok=True)
