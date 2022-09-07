@@ -95,6 +95,9 @@ def main(CFfilename, originalLocation, tilesheetLocation):
 
 		#### Save textures for later
 		if "animationFrames" in item:
+			if item["animationFrames"] == 0:
+				del item["animationFrames"]
+		if "animationFrames" in item:
 			## Save the animated images separately
 			numFrames = item["animationFrames"]
 			numRotations = 1
