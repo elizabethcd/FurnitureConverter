@@ -93,7 +93,6 @@ Once you have a terminal window open and the script folder is the active folder,
 
 Type `python3 furniture_converter.py --modName SOMENAMEHERE` but with `SOMENAMEHERE` swapped out for a descriptive string into terminal and hit return
   * Putting `--modName SOMENAMEHERE` in is required. 
-  * Putting `--fileName ORIGONALJSONANME` is required if the json file in the CF pack is not named `content.json`. Do not put `.json` into this, just the filename.
   * Putting `--modAuthor MODAUTHORNAME` is optional, but recommended if there's anything weird in the author field
   * Putting `--sellAt SHOPNAME` is optional, and adds a json to the DGA mod that sells all the furniture at a specified store. The options for the store names are here: https://github.com/spacechase0/StardewValleyMods/blob/develop/DynamicGameAssets/docs/author-guide.md#valid-shop-ids-for-vanilla and putting in something that isn't there will either throw an error when the mod is loaded or just silently not work, I'm not sure which.
 
