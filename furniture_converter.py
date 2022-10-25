@@ -57,6 +57,9 @@ def main(CFfilename, originalLocation, tilesheetLocation):
 
 	# Gather useful data out of the manifest
 	modAuthor = args.modAuthor if args.modAuthor is not None else manifest["Author"]
+	# Strip out spaces and punctuation and such from mod author and mod name
+	modAuthor = re.sub('[^A-Za-z0-9_\.-]+', '', modAuthor)
+	modName = re.sub('[^A-Za-z0-9_\.-]+', '', modName)
 	uniqueString = modAuthor + "." + modName
 
 	#### Time to process!
