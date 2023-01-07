@@ -391,7 +391,7 @@ def save_json(data, pathname, filename):
 	pathname.joinpath(Path(filename).parent).mkdir(exist_ok=True)
 	# Save the file
 	with pathname.joinpath(filename).open("w", encoding="utf-8") as write_file:
-		json.dump(data, write_file, indent=4)
+		json.dump(data, write_file, indent=4, ensure_ascii=False)
 
 def check_manifest(manifest):
 	if "Author" not in manifest:
