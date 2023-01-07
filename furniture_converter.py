@@ -390,7 +390,7 @@ def save_json(data, pathname, filename):
 	# Make the folder if needed, pulling in relative filepath from filename if needed
 	pathname.joinpath(Path(filename).parent).mkdir(exist_ok=True)
 	# Save the file
-	with pathname.joinpath(filename).open("w") as write_file:
+	with pathname.joinpath(filename).open("w", encoding="utf-8") as write_file:
 		json.dump(data, write_file, indent=4)
 
 def check_manifest(manifest):
