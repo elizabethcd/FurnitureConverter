@@ -111,10 +111,9 @@ def main(CFfilename, originalLocation, tilesheetLocation):
 			allTextures.add(itemTexture)
 			tilesheetImage = Image.open(folderPath.joinpath(itemTexture))
 			# Extract images, locations, widths, and heights from the texture image
-			itemImages, itemImageLocs, itemImageWidths, itemImageHeights = get_image_info(tilesheetImage, itemIndex, itemWidth, itemHeight, rotatedWidth, rotatedHeight, numRotations, itemType)
+			itemImageList, itemImageWidths, itemImageHeights = get_image_info(tilesheetImage, itemIndex, itemWidth, itemHeight, rotatedWidth, rotatedHeight, numRotations, itemType)
 			# Save data associated with textures of this item
-			imageDict[itemID] = itemImages
-			imageLocationDict[itemID] = itemImageLocs
+			imageDict[itemID] = itemImageList
 			imageHeightDict[itemID] = itemImageHeights
 			imageWidthDict[itemID] = itemImageWidths
 
@@ -205,9 +204,9 @@ def main(CFfilename, originalLocation, tilesheetLocation):
 	for ht in allImageHeights:
 		for wth in allImageWidths:
 			for item in imageDict:
-				for im in imageDict[item]:
-					# Get the item index from the dictionary
-					imInd = imageLocationDict[item][imageDict[item].index(im)]
+				for imInfo in imageDict[item]:
+					im = imInfo[0]
+					imLocName = imInfo[1]
 					# Get the image size in tiles
 					imW, imH = im.size
 					imW = int(imW/16)
@@ -229,21 +228,21 @@ def main(CFfilename, originalLocation, tilesheetLocation):
 						for furn in dga_data:
 							if furn["ID"] == item:
 								try:
-									furn["Configurations"][imInd]["Texture"] = dgaTilesheetName + ":" + str(imageLoc)
-									if "FrontTexture" in furn["Configurations"][imInd]:
-										furn["Configurations"][imInd]["FrontTexture"] = frontTilesheetName + ":" + str(imageLoc)
+									furn["Configurations"][imLocName]["Texture"] = dgaTilesheetName + ":" + str(imageLoc)
+									if "FrontTexture" in furn["Configurations"][imLocName]:
+										furn["Configurations"][imLocName]["FrontTexture"] = frontTilesheetName + ":" + str(imageLoc)
 										# Add a real front texture if the player is sitting facing upwards
-										if furn["Configurations"][imInd]["SittingDirection"] == "Up":
+										if furn["Configurations"][imLocName]["SittingDirection"] == "Up":
 											hasFront = True
 										# Add a partial front texture to the sides of armchairs and couches
-										if (furn["Configurations"][imInd]["SittingDirection"] == "Right" or furn["Configurations"][imInd]["SittingDirection"] == "Left") and (furn["FakeType"] == "armchair" or furn["FakeType"] == "couch"):
+										if (furn["Configurations"][imLocName]["SittingDirection"] == "Right" or furn["Configurations"][imLocName]["SittingDirection"] == "Left") and (furn["FakeType"] == "armchair" or furn["FakeType"] == "couch"):
 											hasFront = True
 											frontIsForSideView = True
-									if "NightTexture" in furn["Configurations"][imInd]:
-										furn["Configurations"][imInd]["NightTexture"] = frontTilesheetName + ":" + str(imageLoc)
-								except:
+									if "NightTexture" in furn["Configurations"][imLocName]:
+										furn["Configurations"][imLocName]["NightTexture"] = frontTilesheetName + ":" + str(imageLoc)
+								except Exception as ex:
 									try:
-										furn["Configurations"][0][imInd] = dgaTilesheetName + ":" + str(imageLoc)
+										furn["Configurations"][0][imLocName] = dgaTilesheetName + ":" + str(imageLoc)
 									except:
 										print("Something bad happened when setting the image index " + str(imIng) + " for a texture in " + item + "...")
 						# Paste the image into the tilesheet
@@ -432,13 +431,11 @@ def get_image_info(tilesheetImage, itemIndex, itemWidth, itemHeight, rotatedWidt
 	tilesheetTall = h/16
 	xLoc = (itemIndex % tilesheetWide) * 16
 	yLoc = (itemIndex // tilesheetWide) * 16
-	itemImages = []
-	itemImageLocs = []
+	itemImageList = []
 	itemImageWidths = []
 	itemImageHeights = []
 	imageCoords = (xLoc, yLoc, xLoc+16*itemWidth, yLoc+16*itemHeight)
-	itemImages.append(tilesheetImage.crop(imageCoords))
-	itemImageLocs.append(0)
+	itemImageList.append((tilesheetImage.crop(imageCoords),0))
 	itemImageWidths.append(itemWidth)
 	itemImageHeights.append(itemHeight)
 	# Check the number of rotations is valid for vanilla
@@ -447,29 +444,25 @@ def get_image_info(tilesheetImage, itemIndex, itemWidth, itemHeight, rotatedWidt
 	# For furniture with rotations, automatically look in the expected places for rotation images
 	if numRotations == 2 or numRotations == 4:
 		imageCoords = (xLoc+16*itemWidth, yLoc, xLoc+16*itemWidth+16*rotatedWidth, yLoc+16*rotatedHeight)
-		itemImages.append(tilesheetImage.crop(imageCoords))
-		itemImageLocs.append(1)
+		itemImageList.append((tilesheetImage.crop(imageCoords),1))
 		itemImageWidths.append(rotatedWidth)
 		itemImageHeights.append(rotatedHeight)
 	if numRotations == 4:
 		imageCoords = (xLoc+16*itemWidth+16*rotatedWidth, yLoc, xLoc+32*itemWidth+16*rotatedWidth, yLoc+16*itemHeight)
-		itemImages.append(tilesheetImage.crop(imageCoords))
-		itemImageLocs.append(2)
+		itemImageList.append((tilesheetImage.crop(imageCoords),2))
 		itemImageWidths.append(itemWidth)
 		itemImageHeights.append(itemHeight)
 		imageCoords = (xLoc+16*itemWidth, yLoc, xLoc+16*itemWidth+16*rotatedWidth, yLoc+16*rotatedHeight)
-		itemImages.append(tilesheetImage.crop(imageCoords).transpose(Image.Transpose.FLIP_LEFT_RIGHT))
-		itemImageLocs.append(3)
+		itemImageList.append((tilesheetImage.crop(imageCoords).transpose(Image.Transpose.FLIP_LEFT_RIGHT),3))
 		itemImageWidths.append(rotatedWidth)
 		itemImageHeights.append(rotatedHeight)
 	# For windows and lamps, save the night textures
 	if itemType == "window" or itemType == "lamp":
 		imageCoords = (xLoc+16*itemWidth, yLoc, xLoc+16*itemWidth*2, yLoc+16*itemHeight)
-		itemImages.append(tilesheetImage.crop(imageCoords))
-		itemImageLocs.append("NightTexture")
+		itemImageList.append((tilesheetImage.crop(imageCoords),"NightTexture"))
 		itemImageWidths.append(itemWidth)
 		itemImageHeights.append(itemHeight)
-	return itemImages, itemImageLocs, itemImageWidths, itemImageHeights
+	return itemImageList, itemImageWidths, itemImageHeights
 
 def get_animated_image_info(tilesheetImage, itemIndex, itemWidth, itemHeight, numFrames):
 	w, h = tilesheetImage.size
