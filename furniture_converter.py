@@ -205,6 +205,7 @@ def main(CFfilename, originalLocation, tilesheetLocation):
 		for wth in allImageWidths:
 			for item in imageDict:
 				for imInfo in imageDict[item]:
+					# Unpack the tuple into the image plus its location's name
 					im = imInfo[0]
 					imLocName = imInfo[1]
 					# Get the image size in tiles
@@ -431,9 +432,9 @@ def get_image_info(tilesheetImage, itemIndex, itemWidth, itemHeight, rotatedWidt
 	tilesheetTall = h/16
 	xLoc = (itemIndex % tilesheetWide) * 16
 	yLoc = (itemIndex // tilesheetWide) * 16
-	itemImageList = []
-	itemImageWidths = []
-	itemImageHeights = []
+	itemImageList = [] # Store the images and their location's names
+	itemImageWidths = [] # Store the widths
+	itemImageHeights = [] # Store the heights
 	imageCoords = (xLoc, yLoc, xLoc+16*itemWidth, yLoc+16*itemHeight)
 	itemImageList.append((tilesheetImage.crop(imageCoords),0))
 	itemImageWidths.append(itemWidth)
