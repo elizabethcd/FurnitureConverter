@@ -363,7 +363,7 @@ def main(CFfilename, originalLocation, tilesheetLocation):
 
 def load_json(filepath, filename):
 	# Read the json in as text
-	file_contents = filepath.joinpath(filename).read_text()
+	file_contents = filepath.joinpath(filename).read_text(encoding="UTF-8")
 
 	# Some third-party JSON files begin with extraneous characters - try to fix them up.
 	unused_chars, opening_bracket, rest_of_file = file_contents.partition("{")
