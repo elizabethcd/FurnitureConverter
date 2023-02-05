@@ -1,0 +1,4 @@
+Pillow==9.0.0
+json5==0.9.10
+argparse==1.4.0
+pathlib==1.0.1
