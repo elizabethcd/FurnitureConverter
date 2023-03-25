@@ -86,15 +86,15 @@ def main(CFfilename, originalLocation, tilesheetLocation):
 		itemWidth = item["width"]
 		itemHeight = item["height"]
 		itemID = re.sub("[^a-zA-Z]+", "", itemName) + str(count)
-		itemType = item["type"] if "type" in item else "other"
+		itemType = item["type"].casefold() if "type" in item else "other"
 		itemDescription = item["description"] if "description" in item else "A piece of furniture."
 		itemPrice = item["price"] if "price" in item else 100
 		numRotations = item["rotations"] if "rotations" in item else 1
-		rotatedWidth = item["rotatedWidth"] if "rotatedWidth" in item else item["height"]
-		rotatedHeight = item["rotatedHeight"] if "rotatedHeight" in item else item["width"]
+		rotatedWidth = item["rotatedWidth"] if "rotatedWidth" in item else get_rotated_dims(itemType,itemWidth,itemHeight)[0]
+		rotatedHeight = item["rotatedHeight"] if "rotatedHeight" in item else get_rotated_dims(itemType,itemWidth,itemHeight)[1]
 		boxWidth = item["boxWidth"] if "boxWidth" in item else itemWidth
 		boxHeight = item["boxHeight"] if "boxHeight" in item else itemHeight
-		rotatedBoxHeight = item["rotatedBoxHeight"] if "rotatedBoxHeight" in item else rotatedHeight
+		rotatedBoxHeight = item["rotatedBoxHeight"] if "rotatedBoxHeight" in item else get_rotated_collision(itemType, boxHeight, rotatedHeight)
 
 		#### Save textures for later
 		if "animationFrames" in item:
@@ -543,6 +543,18 @@ def get_cp_type(itemType, itemName):
 	else:
 		print("Bad item type for " + itemName + " of " + itemType + ", defaulting to 'other'")
 		return furnitureTypesConversion["other"]
+
+def get_rotated_dims(itemType, width, height):
+	if (itemType == "chair" or itemType == "stool" or itemType == "lamp"):
+		return (width, height)
+	else:
+		return (height, width)
+
+def get_rotated_collision(itemType, boxHeight, rotatedHeight):
+	if (itemType == "chair" or itemType == "stool" or itemType == "lamp"):
+		return boxHeight
+	else:
+		return rotatedHeight
 
 def add_dga_seats(dgaConfigs, itemType, itemName, numRotations, itemWidth):
 	# Set the directions of sitting depending on how many rotations there are
