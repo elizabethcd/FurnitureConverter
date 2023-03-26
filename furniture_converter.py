@@ -255,7 +255,9 @@ def main(CFfilename, originalLocation, tilesheetLocation):
 							# For the furniture with "arms", add a front texture that's the bottom tile of the side view
 							if frontIsForSideView:
 								im = im.crop((0, (imH-1)*16, imW*16, imH*16))
-							frontTilesheet.paste(im,(imXLoc,imYLoc))
+								frontTilesheet.paste(im,(imXLoc,imYLoc+(imH-1)*16))
+							else:
+								frontTilesheet.paste(im,(imXLoc,imYLoc))
 	# Remove the fake item types
 	for furn in dga_data:
 		furn.pop("FakeType", None)
