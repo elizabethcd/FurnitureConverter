@@ -22,6 +22,7 @@ def main(CFfilename, originalLocation, tilesheetLocation):
 	parser.add_argument('--modName', type=str, required=True, help="Name of the mod (no spaces), should be identifying")
 	parser.add_argument('--modAuthor', type=str, required=False, help="Author of the original mod (no spaces)")
 	parser.add_argument('--sellAt', type=str, required=False, help="Name of shop to sell furniture at. Options are found at https://github.com/spacechase0/StardewValleyMods/blob/develop/DynamicGameAssets/docs/author-guide.md#valid-shop-ids-for-vanilla")
+	parser.add_argument('--outputDirectory', type=str, required=False, help="Optional specific output directory. Will add -1.6 to end for 1.6 version")
 	# Parse the argument
 	args = parser.parse_args()
 
@@ -329,7 +330,7 @@ def main(CFfilename, originalLocation, tilesheetLocation):
 	}
 
 	## Save all the DGA json files in an appropriately named folder
-	dga_folder_path = Path("[DGA] " + manifest["Name"])
+	dga_folder_path = args.outputDirectory if args.outputDirectory else Path("[DGA] " + manifest["Name"])
 	dga_i18n_path = dga_folder_path.joinpath("i18n")
 	save_json(dga_data, dga_folder_path, "furniture.json")
 	save_json(dga_content_data, dga_folder_path, "content.json")
@@ -339,7 +340,7 @@ def main(CFfilename, originalLocation, tilesheetLocation):
 		save_json(dga_shop_entries, dga_folder_path, "shopEntries.json")
 
 	## Save all of the CP json files in an appropriately named folder
-	cp_folder_path = Path("[CP] FOR ALPHA ONLY " + manifest["Name"])
+	cp_folder_path = args.outputDirectory + '-1.6' if args.outputDirectory else Path("[CP] FOR ALPHA ONLY " + manifest["Name"])
 	cp_i18n_path = cp_folder_path.joinpath("i18n")
 	save_json(actual_cp_data, cp_folder_path,"content.json")
 	save_json(cp_manifest,cp_folder_path,"manifest.json")
