@@ -170,10 +170,10 @@ def main(CFfilename, originalLocation, tilesheetLocation):
 		if shouldSell:
 			dga_shop_entries.append({
 				"$ItemType": "ShopEntry",
-			    "Item": { "Value": modAuthor + ".DGA." + modName + "/" + itemID },
-			    "ShopId": shopName,
-			    "MaxSold": 1,
-			    "Cost": itemPrice,
+					"Item": { "Value": modAuthor + ".DGA." + modName + "/" + itemID },
+					"ShopId": shopName,
+					"MaxSold": 1,
+					"Cost": itemPrice,
 			},)
 
 		#### CP
@@ -266,14 +266,14 @@ def main(CFfilename, originalLocation, tilesheetLocation):
 
 	# Add the extra stuff to the CP json
 	actual_cp_data = {
-	    "Format": "1.26.0",
-	    "Changes": [
-	        {
-	            "Action": "EditData",
-	            "Target": "Data/Furniture",
-	            "Entries": cp_data
-	        },
-	    ]
+			"Format": "1.26.0",
+			"Changes": [
+					{
+							"Action": "EditData",
+							"Target": "Data/Furniture",
+							"Entries": cp_data
+					},
+			]
 	}
 
 	# Add in loading the textures
@@ -287,17 +287,17 @@ def main(CFfilename, originalLocation, tilesheetLocation):
 	# Create the content.json for DGA
 	dga_content_data = [
 		{
-	        "$ItemType": "ContentIndex",
-	        "FilePath": "furniture.json"
-	    },
+					"$ItemType": "ContentIndex",
+					"FilePath": "furniture.json"
+			},
 	]
 
 	# Add shop entries json to DGA content if needed
 	if shouldSell:
 		dga_content_data.append({
-	        "$ItemType": "ContentIndex",
-	        "FilePath": "shopEntries.json"
-	    },)
+					"$ItemType": "ContentIndex",
+					"FilePath": "shopEntries.json"
+			},)
 
 	# Make a new manifest for DGA
 	dga_manifest = {
@@ -312,7 +312,7 @@ def main(CFfilename, originalLocation, tilesheetLocation):
 			"MinimumVersion": "1.4.2",
 		},
 		"DGA.FormatVersion": 2,
-	    "DGA.ConditionsFormatVersion": "1.25.0"
+			"DGA.ConditionsFormatVersion": "1.25.0"
 	}
 
 	# Make a new manifest for CP
@@ -376,15 +376,15 @@ def load_json(filepath, filename):
 	file_contents = file_contents.replace(u'\u201c', '"').replace(u'\u201d', '"')
 
 	try:
-	    # Try using the standard module first because it's fast and handles most cases.
+			# Try using the standard module first because it's fast and handles most cases.
 		data = json.loads(file_contents)
 	except json.decoder.JSONDecodeError:
-	    # The json5 module is much slower, but is more lenient about formatting issues.
-	    try:
-	    	data = json5.loads(file_contents)
-	    except json.decoder.JSONDecodeError:
-	    	data = {}
-	    	print("The json file (" + filename + ") specified is not a valid json file. Please try putting it through smapi.io/json and correcting any errors shown there.")
+			# The json5 module is much slower, but is more lenient about formatting issues.
+			try:
+				data = json5.loads(file_contents)
+			except json.decoder.JSONDecodeError:
+				data = {}
+				print("The json file (" + filename + ") specified is not a valid json file. Please try putting it through smapi.io/json and correcting any errors shown there.")
 
 	# Return the data loaded
 	return data
