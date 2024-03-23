@@ -338,7 +338,7 @@ def main(CFfilename, originalLocation, tilesheetLocation):
 		"Version": "1.0.0",
 		"Description": manifest["Description"],
 		"UniqueID": modAuthor + '.' + modName,
-		"UpdateKeys": manifest["UpdateKeys"],
+		"UpdateKeys": manifest["UpdateKeys"] if 'UpdateKeys' in manifest else [],
 		"ContentPackFor": {
 			"UniqueID": "Pathoschild.ContentPatcher",
 			"MinimumVersion": "2.0.0",
