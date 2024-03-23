@@ -11,7 +11,7 @@ CFfilename = "*.json"
 originalLocation = "original"
 tilesheetLocation = "Mods"
 dgaTilesheetName = "dga_furniture_tilesheet.png"
-frontTilesheetName = "dga_front_tilesheet.png"
+dgaFrontTilesheetName = "dga_front_tilesheet.png"
 
 # TODO: Handle default sitting for armchairs, benches, couches
 
@@ -78,6 +78,7 @@ def main(CFfilename, originalLocation, tilesheetLocation):
 	imageWidthDict = {}
 	imageHeightDict = {}
 	animatedImages = {}
+	cpFrontImages = {}
 	count = 0
 	for item in furniture_data:
 		#### Set up basic information
@@ -116,6 +117,12 @@ def main(CFfilename, originalLocation, tilesheetLocation):
 			tilesheetImage = Image.open(folderPath.joinpath(itemTexture))
 			# Extract images, locations, widths, and heights from the texture image
 			itemImageList, itemImageWidths, itemImageHeights = get_image_info(tilesheetImage, itemIndex, itemWidth, itemHeight, rotatedWidth, rotatedHeight, numRotations, itemType)
+			# Extract front textures for CP
+			frontCoordsList = get_front_image_info(tilesheetImage, itemIndex, itemWidth, itemHeight, rotatedWidth, rotatedHeight, numRotations, itemType)
+			if (itemTexture not in cpFrontImages and frontCoordsList):
+				cpFrontImages[itemTexture] = Image.new(mode="RGBA",size=tilesheetImage.size)
+			for coords in frontCoordsList:
+				cpFrontImages[itemTexture].paste(tilesheetImage.crop(coords),(coords[0],coords[1]))
 			# Save data associated with textures of this item
 			imageDict[itemID] = itemImageList
 			imageHeightDict[itemID] = itemImageHeights
@@ -165,7 +172,7 @@ def main(CFfilename, originalLocation, tilesheetLocation):
 		if hasSeats(itemType, itemName):
 			dgaConfigs = add_dga_seats(dgaConfigs, itemType, itemName, numRotations, itemWidth)
 		if "animationFrames" not in item and (itemType == "window" or itemType == "lamp" or itemType == "sconce"):
-			dgaConfigs[0]["NightTexture"] = frontTilesheetName + ":0" # Placeholder
+			dgaConfigs[0]["NightTexture"] = dgaFrontTilesheetName + ":0" # Placeholder
 		dga_item_data["Configurations"] = dgaConfigs
 		# Save to the json array
 		dga_data.append(dga_item_data)
@@ -204,7 +211,7 @@ def main(CFfilename, originalLocation, tilesheetLocation):
 	tilesheetWidth = get_best_tilesheet_width(allImageWidths)
 	tilesheetHeight = 0
 	newTilesheet = Image.new(mode="RGBA",size=(tilesheetWidth*16,12000))
-	frontTilesheet = Image.new(mode="RGBA",size=(tilesheetWidth*16,12000))
+	dgaFrontTilesheet = Image.new(mode="RGBA",size=(tilesheetWidth*16,12000))
 	for ht in allImageHeights:
 		for wth in allImageWidths:
 			for item in imageDict:
@@ -235,7 +242,7 @@ def main(CFfilename, originalLocation, tilesheetLocation):
 								try:
 									furn["Configurations"][imLocName]["Texture"] = dgaTilesheetName + ":" + str(imageLoc)
 									if "FrontTexture" in furn["Configurations"][imLocName]:
-										furn["Configurations"][imLocName]["FrontTexture"] = frontTilesheetName + ":" + str(imageLoc)
+										furn["Configurations"][imLocName]["FrontTexture"] = dgaFrontTilesheetName + ":" + str(imageLoc)
 										# Add a real front texture if the player is sitting facing upwards
 										if furn["Configurations"][imLocName]["SittingDirection"] == "Up":
 											hasFront = True
@@ -244,7 +251,7 @@ def main(CFfilename, originalLocation, tilesheetLocation):
 											hasFront = True
 											frontIsForSideView = True
 									if "NightTexture" in furn["Configurations"][imLocName]:
-										furn["Configurations"][imLocName]["NightTexture"] = frontTilesheetName + ":" + str(imageLoc)
+										furn["Configurations"][imLocName]["NightTexture"] = dgaFrontTilesheetName + ":" + str(imageLoc)
 								except Exception as ex:
 									try:
 										furn["Configurations"][0][imLocName] = dgaTilesheetName + ":" + str(imageLoc)
@@ -259,13 +266,12 @@ def main(CFfilename, originalLocation, tilesheetLocation):
 							# For the furniture with "arms", add a front texture that's the bottom tile of the side view
 							if frontIsForSideView:
 								im = im.crop((0, (imH-1)*16, imW*16, imH*16))
-								frontTilesheet.paste(im,(imXLoc,imYLoc+(imH-1)*16))
+								dgaFrontTilesheet.paste(im,(imXLoc,imYLoc+(imH-1)*16))
 							else:
-								frontTilesheet.paste(im,(imXLoc,imYLoc))
+								dgaFrontTilesheet.paste(im,(imXLoc,imYLoc))
 	# Remove the fake item types
 	for furn in dga_data:
 		furn.pop("FakeType", None)
-
 
 	# Add the extra stuff to the CP json
 	actual_cp_data = {
@@ -285,6 +291,13 @@ def main(CFfilename, originalLocation, tilesheetLocation):
 			"Action": "Load",
 			"Target": tilesheetLocation + "/" + modIDToken + "/" + tex[:-4],
 			"FromFile": tex
+			})
+	# Add in loading the front textures
+	for imName in cpFrontImages:
+		actual_cp_data["Changes"].append({
+			"Action": "Load",
+			"Target": tilesheetLocation + "/" + modIDToken + "/" + imName[:-4] + "Front",
+			"FromFile": imName[:-4] + "Front.png"
 			})
 
 	# Create the content.json for DGA
@@ -353,8 +366,8 @@ def main(CFfilename, originalLocation, tilesheetLocation):
 	if tilesheetHeight > 0:
 		newTilesheet = newTilesheet.crop((0,0,tilesheetWidth*16,tilesheetHeight*16))
 		newTilesheet.save(dga_folder_path.joinpath(dgaTilesheetName))
-		frontTilesheet = frontTilesheet.crop((0,0,tilesheetWidth*16,tilesheetHeight*16))
-		frontTilesheet.save(dga_folder_path.joinpath(frontTilesheetName))
+		dgaFrontTilesheet = dgaFrontTilesheet.crop((0,0,tilesheetWidth*16,tilesheetHeight*16))
+		dgaFrontTilesheet.save(dga_folder_path.joinpath(dgaFrontTilesheetName))
 	if animatedImages:
 		dga_anim_path = dga_folder_path.joinpath("animated")
 		dga_anim_path.mkdir(exist_ok=True)
@@ -366,6 +379,10 @@ def main(CFfilename, originalLocation, tilesheetLocation):
 		texIm = Image.open(folderPath.joinpath(tex))
 		cp_folder_path.joinpath(Path(tex).parent).mkdir(exist_ok=True)
 		texIm.save(cp_folder_path.joinpath(tex))
+	for imName in cpFrontImages:
+		im = cpFrontImages[imName]
+		cp_folder_path.joinpath(Path(imName).parent).mkdir(exist_ok=True)
+		im.save(cp_folder_path.joinpath(Path(imName).stem+"Front.png"))
 
 def load_json(filepath, filename):
 	# Read the json in as text
@@ -431,6 +448,23 @@ def check_item(item):
 		print("Height field missing from " + item["name"])
 		return False
 	return True
+
+def get_front_image_info(tilesheetImage, itemIndex, itemWidth, itemHeight, rotatedWidth, rotatedHeight, numRotations, itemType):
+	w, h = tilesheetImage.size
+	tilesheetWide = w/16
+	tilesheetTall = h/16
+	xLoc = (int)(itemIndex % tilesheetWide) * 16
+	yLoc = (int)(itemIndex // tilesheetWide) * 16
+	frontImageCoordsList = []
+	imageCoords = (xLoc, yLoc, xLoc+16*itemWidth, yLoc+16*itemHeight)
+	if (itemType == "chair" or itemType == "bench"):
+		if (numRotations == 4):
+			frontImageCoordsList.append((xLoc+16*itemWidth+16*rotatedWidth, yLoc, xLoc+32*itemWidth+16*rotatedWidth, yLoc+16*itemHeight))
+	elif (itemType == "armchair" or itemType == "couch"):
+		if (numRotations == 4):
+			frontImageCoordsList.append((xLoc+16*itemWidth, yLoc+16*(rotatedHeight-1), xLoc+16*itemWidth+16*rotatedWidth, yLoc+16*rotatedHeight))
+			frontImageCoordsList.append((xLoc+16*itemWidth+16*rotatedWidth, yLoc, xLoc+32*itemWidth+16*rotatedWidth, yLoc+16*itemHeight))
+	return frontImageCoordsList
 
 def get_image_info(tilesheetImage, itemIndex, itemWidth, itemHeight, rotatedWidth, rotatedHeight, numRotations, itemType):
 	w, h = tilesheetImage.size
@@ -579,7 +613,7 @@ def add_dga_seats(dgaConfigs, itemType, itemName, numRotations, itemWidth):
 			if i < len(dgaConfigs):
 				dgaConfigs[i]["Seats"] = [{"X": 0, "Y": 0}]
 				dgaConfigs[i]["SittingDirection"] = "Any"
-				dgaConfigs[i]["FrontTexture"] = frontTilesheetName + ":0" # Placeholder
+				dgaConfigs[i]["FrontTexture"] = dgaFrontTilesheetName + ":0" # Placeholder
 		return dgaConfigs
 
 	# Put the chair seats in if it's a chair
@@ -588,7 +622,7 @@ def add_dga_seats(dgaConfigs, itemType, itemName, numRotations, itemWidth):
 			if i < len(dgaConfigs):
 				dgaConfigs[i]["Seats"] = [{"X": 0, "Y": 0}]
 				dgaConfigs[i]["SittingDirection"] = sitDirections[i]
-				dgaConfigs[i]["FrontTexture"] = frontTilesheetName + ":0" # Placeholder
+				dgaConfigs[i]["FrontTexture"] = dgaFrontTilesheetName + ":0" # Placeholder
 		return dgaConfigs
 
 	armchairSeats = [{"X": 0.5, "Y": 0},{"X": 1, "Y": 0},{"X": 0.5, "Y": 0},{"X": 0, "Y": 0}]
@@ -597,7 +631,7 @@ def add_dga_seats(dgaConfigs, itemType, itemName, numRotations, itemWidth):
 			if i < len(dgaConfigs):
 				dgaConfigs[i]["Seats"] = [armchairSeats[i]]
 				dgaConfigs[i]["SittingDirection"] = sitDirections[i]
-				dgaConfigs[i]["FrontTexture"] = frontTilesheetName + ":0" # Placeholder
+				dgaConfigs[i]["FrontTexture"] = dgaFrontTilesheetName + ":0" # Placeholder
 		return dgaConfigs
 
 	if itemType == "couch":
@@ -615,7 +649,7 @@ def add_dga_seats(dgaConfigs, itemType, itemName, numRotations, itemWidth):
 						seatLocs.append({"X": 0, "Y": s+1})
 					dgaConfigs[i]["Seats"] = seatLocs
 				dgaConfigs[i]["SittingDirection"] = sitDirections[i]
-				dgaConfigs[i]["FrontTexture"] = frontTilesheetName + ":0" # Placeholder
+				dgaConfigs[i]["FrontTexture"] = dgaFrontTilesheetName + ":0" # Placeholder
 		return dgaConfigs
 
 	if itemType == "bench":
@@ -633,7 +667,7 @@ def add_dga_seats(dgaConfigs, itemType, itemName, numRotations, itemWidth):
 						seatLocs.append({"X": 0, "Y": s+0.5})
 					dgaConfigs[i]["Seats"] = seatLocs
 				dgaConfigs[i]["SittingDirection"] = sitDirections[i]
-				dgaConfigs[i]["FrontTexture"] = frontTilesheetName + ":0" # Placeholder
+				dgaConfigs[i]["FrontTexture"] = dgaFrontTilesheetName + ":0" # Placeholder
 		return dgaConfigs
 
 	return dgaConfigs
