@@ -1,6 +1,6 @@
 # FurnitureConverter
 
-This is a tool for use when converting Custom Furniture (CF) mods to either use Dynamic Game Assets (DGA) in the current 1.5.6 version of Stardew Valley, or Content Patcher (CP) in a future version of Stardew Valley. 
+This is a tool for use when converting Custom Furniture (CF) mods to either use Dynamic Game Assets (DGA) in the previous 1.5.6 version of Stardew Valley, or Content Patcher (CP) in the current 1.6 version of Stardew Valley. 
 
 Feedback is welcome via Github issues or the Stardew Valley Discord (please include the exact error encountered and ideally the json file as well via smapi.io/json).
 
@@ -19,10 +19,12 @@ Feedback is welcome via Github issues or the Stardew Valley Discord (please incl
   * On Windows, open File Explorer to the folder you want, click on the address bar, type `powershell`, and hit return.
   * If you use Linux you can check out info on `cd` for your distro (or see Mac guide)
 * Type `python furniture_converter.py --modName SOMENAMEHERE` but with `SOMENAMEHERE` swapped out for a descriptive string into terminal and hit return
-  * Putting `--modName SOMENAMEHERE` in is required. Some examples: BeechFurniture, FlowerPrideBanners, SpringFurniture
+  * Putting `--modName SOMENAMEHERE` is optional, unless you want it to be different from the manifest. Some examples: BeechFurniture, FlowerPrideBanners, SpringFurniture
   * Putting `--modAuthor MODAUTHORNAME` is optional, but recommended if there's anything weird in the author field
   * Putting `--sellAt SHOPNAME` is optional, and adds a json to the DGA mod that sells all the furniture at a specified store. The options for the store names are here: https://github.com/spacechase0/StardewValleyMods/blob/develop/DynamicGameAssets/docs/author-guide.md#valid-shop-ids-for-vanilla and putting in something that isn't there will either throw an error when the mod is loaded or just silently not work, I'm not sure which.
-* It should create two new folders in the same folder as the script, one containing a DGA mod and one containing a CP mod. **The CP mod will not work until a future version of the game.** The two folders should be named something reasonable, and you should be able to use them as fully functional mods. 
+  * Putting `--outputDir FOLDERNAME` is optional, and lets you specify where to put the output
+  * Putting `--inputDir FOLDERNAME` is optional, and lets you specify which folder (at the same level of the script) is used as the input
+* It should create two new folders in the same folder as the script, one containing a DGA mod and one containing a CP mod. **The CP mod is for game version 1.6, while the DGA version is for game version 1.5.6.** The two folders should be named something reasonable, and you should be able to use them as fully functional mods. 
 
 ## Detailed Tutorials on How to Use
 
