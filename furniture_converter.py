@@ -19,26 +19,27 @@ def main(CFfilename, originalLocation, tilesheetLocation):
 	# Create the parser
 	parser = argparse.ArgumentParser()
 	# Add an argument
-	parser.add_argument('--modName', type=str, required=True, help="Name of the mod (no spaces), should be identifying")
+	parser.add_argument('--modName', type=str, required=False, help="Name of the mod (no spaces), should be identifying")
 	parser.add_argument('--modAuthor', type=str, required=False, help="Author of the original mod (no spaces)")
 	parser.add_argument('--sellAt', type=str, required=False, help="Name of shop to sell furniture at. Options are found at https://github.com/spacechase0/StardewValleyMods/blob/develop/DynamicGameAssets/docs/author-guide.md#valid-shop-ids-for-vanilla")
-	parser.add_argument('--outputDirectory', type=str, required=False, help="Optional specific output directory. Will add -1.6 to end for 1.6 version")
+	parser.add_argument('--outputDir', type=str, required=False, help="Optional specific output directory. Will add -1.6 to end for 1.6 version")
+	parser.add_argument('--inputDir', type=str, required=False, help="Optional specific input directory")
 	# Parse the argument
 	args = parser.parse_args()
 
 	# Set information based on inputs
-	modName = args.modName
 	shouldSell = True if args.sellAt is not None else False
 	shopName = None if args.sellAt is None else check_shop_name(args.sellAt)
 
 	## Load up the furniture json!
-	folderPath = Path(originalLocation)
+	folderName = args.inputDir if args.inputDir is not None else originalLocation
+	folderPath = Path(folderName)
 	
 	## Read the manifest json in as text
-	manifest = load_json(folderPath, "manifest.json")
+	manifest = load_json(folderPath, 'manifest.json')
 	# Check that the manifest contains the necessary information
 	if not check_manifest(manifest):
-		print("Malformed manifest, quitting...")
+		print('Malformed manifest, quitting...')
 		return
 	
 	furniture_data = []
@@ -49,19 +50,21 @@ def main(CFfilename, originalLocation, tilesheetLocation):
 			continue
 			
 		data = load_json(folderPath, f.name)
-		if f.name == "manifest.json": continue
+		if f.name == 'manifest.json': continue
 		# Check that the furniture json is not empty
-		if not data or "furniture" not in data:
+		if not data or 'furniture' not in data:
 			print("No furniture in %s json, skipping..." % f.name)
 			continue
 		furniture_data.extend(data["furniture"])
 
 	# Gather useful data out of the manifest
-	modAuthor = args.modAuthor if args.modAuthor is not None else manifest["Author"]
+	modAuthor = args.modAuthor if args.modAuthor is not None else manifest['Author']
+	modName = args.modName if args.modName is not None else manifest['UniqueID'].split('.')[-1]
 	# Strip out spaces and punctuation and such from mod author and mod name
 	modAuthor = re.sub(r'[^A-Za-z0-9_\.-]+', '', modAuthor)
 	modName = re.sub(r'[^A-Za-z0-9_\.-]+', '', modName)
 	uniqueString = modAuthor + "." + modName
+	modIDToken = '{{ModId}}'
 
 	#### Time to process!
 	cp_data = {}
@@ -178,19 +181,19 @@ def main(CFfilename, originalLocation, tilesheetLocation):
 
 		#### CP
 		# Set up the basic furniture data
-		uniqueItemID = uniqueString + "." + itemID
+		uniqueItemID = modIDToken + "_" + itemID
 		itemType = get_cp_type(itemType, itemName)
 		itemSize = str(itemWidth) + " " + str(itemHeight)
 		itemBoxSize = str(boxWidth) + " " + str(boxHeight)
-		displayName = "{{i18n:" + uniqueItemID + ".name}}"
+		displayName = "{{i18n:" + itemID + ".name}}"
 		placementRestrict = str(-1)
 		tilesheetIndex = str(itemIndex)
-		tilesheetPath = tilesheetLocation + "\\" + uniqueString + "\\" + itemTexture[:-4]
+		tilesheetPath = tilesheetLocation + "\\" + modIDToken + "\\" + itemTexture[:-4]
 		cp_item_data = [uniqueItemID, str(itemType), itemSize, itemBoxSize, str(numRotations), 
 			str(itemPrice), placementRestrict, displayName, tilesheetIndex, tilesheetPath]
 		cp_item_data = "/".join(cp_item_data)
 		# Save to the json dictionary
-		cp_default[uniqueItemID + ".name"] = itemName
+		cp_default[itemID + ".name"] = itemName
 		cp_data[uniqueItemID] = cp_item_data
 
 	# Build lists of all the sprite heights and widths
@@ -266,7 +269,7 @@ def main(CFfilename, originalLocation, tilesheetLocation):
 
 	# Add the extra stuff to the CP json
 	actual_cp_data = {
-			"Format": "1.26.0",
+			"Format": "2.0.0",
 			"Changes": [
 					{
 							"Action": "EditData",
@@ -280,7 +283,7 @@ def main(CFfilename, originalLocation, tilesheetLocation):
 	for tex in allTextures:
 		actual_cp_data["Changes"].append({
 			"Action": "Load",
-			"Target": tilesheetLocation + "/" + uniqueString + "/" + tex[:-4],
+			"Target": tilesheetLocation + "/" + modIDToken + "/" + tex[:-4],
 			"FromFile": tex
 			})
 
@@ -321,16 +324,16 @@ def main(CFfilename, originalLocation, tilesheetLocation):
 		"Author": modAuthor,
 		"Version": "1.0.0",
 		"Description": manifest["Description"],
-		"UniqueID": modAuthor + ".CP." + modName,
-		"UpdateKeys": [],
+		"UniqueID": modAuthor + '.' + modName,
+		"UpdateKeys": manifest["UpdateKeys"],
 		"ContentPackFor": {
 			"UniqueID": "Pathoschild.ContentPatcher",
-			"MinimumVersion": "1.26.0",
+			"MinimumVersion": "2.0.0",
 		}
 	}
 
 	## Save all the DGA json files in an appropriately named folder
-	dga_folder_path = args.outputDirectory if args.outputDirectory else Path("[DGA] " + manifest["Name"])
+	dga_folder_path = args.outputDir if args.outputDir else Path("[DGA] " + manifest["Name"])
 	dga_i18n_path = dga_folder_path.joinpath("i18n")
 	save_json(dga_data, dga_folder_path, "furniture.json")
 	save_json(dga_content_data, dga_folder_path, "content.json")
@@ -340,7 +343,7 @@ def main(CFfilename, originalLocation, tilesheetLocation):
 		save_json(dga_shop_entries, dga_folder_path, "shopEntries.json")
 
 	## Save all of the CP json files in an appropriately named folder
-	cp_folder_path = args.outputDirectory + '-1.6' if args.outputDirectory else Path("[CP] FOR ALPHA ONLY " + manifest["Name"])
+	cp_folder_path = args.outputDir+ '-1.6' if args.outputDir else Path("[CP] " + manifest["Name"])
 	cp_i18n_path = cp_folder_path.joinpath("i18n")
 	save_json(actual_cp_data, cp_folder_path,"content.json")
 	save_json(cp_manifest,cp_folder_path,"manifest.json")
