@@ -346,7 +346,7 @@ def main(CFfilename, originalLocation, tilesheetLocation):
 	}
 
 	## Save all the DGA json files in an appropriately named folder
-	dga_folder_path = args.outputDir if args.outputDir else Path("[DGA] " + manifest["Name"])
+	dga_folder_path = Path(args.outputDir) if args.outputDir else Path("[DGA] " + manifest["Name"])
 	dga_i18n_path = dga_folder_path.joinpath("i18n")
 	save_json(dga_data, dga_folder_path, "furniture.json")
 	save_json(dga_content_data, dga_folder_path, "content.json")
@@ -356,7 +356,7 @@ def main(CFfilename, originalLocation, tilesheetLocation):
 		save_json(dga_shop_entries, dga_folder_path, "shopEntries.json")
 
 	## Save all of the CP json files in an appropriately named folder
-	cp_folder_path = args.outputDir+ '-1.6' if args.outputDir else Path("[CP] " + manifest["Name"])
+	cp_folder_path = Path(args.outputDir)+ '-1.6' if args.outputDir else Path("[CP] " + manifest["Name"])
 	cp_i18n_path = cp_folder_path.joinpath("i18n")
 	save_json(actual_cp_data, cp_folder_path,"content.json")
 	save_json(cp_manifest,cp_folder_path,"manifest.json")
